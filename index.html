@@ -101,9 +101,6 @@
             margin-top: 40px;
             font-size: 16px;
         }
-        
-        /* Evidenzia keyword trovate */
-        .highlight { background-color: yellow; }
     </style>
 </head>
 <body>
@@ -116,7 +113,6 @@
 
     <script>
         // --- DATABASE PRODOTTI ---
-        // Ho strutturato i tuoi dati in questo array
         const rawData = [
             // --- GATTO ---
             {t: "cat", b: "ADVANCE", w: "1,5 kg", v: ["Weight balance"]},
@@ -156,7 +152,7 @@
             {t: "dog", b: "VETLIFE", w: "", v: ["Hypo pesce idrolizzato", "Dermatosis salmone", "Obesity al pollo"]}
         ];
 
-        // "Appiattiamo" i dati per renderli facili da cercare
+        // "Appiattiamo" i dati
         const products = [];
         rawData.forEach(brandGroup => {
             brandGroup.v.forEach(variant => {
@@ -165,7 +161,6 @@
                     brand: brandGroup.b,
                     weight: brandGroup.w,
                     name: variant,
-                    // Creiamo una stringa nascosta per la ricerca ottimizzata
                     searchString: (brandGroup.t === 'cat' ? 'gatto cat ' : 'cane dog ') + 
                                   brandGroup.b.toLowerCase() + " " + 
                                   variant.toLowerCase() + " " + 
@@ -185,10 +180,10 @@
                 return;
             }
 
-            // Limitiamo la visualizzazione iniziale per velocità se la lista è troppo lunga
-            const displayList = list.length > 100 ? list.slice(0, 100) : list;
-
-            displayList.forEach(p => {
+            // --- CORREZIONE: RIMOSSO IL LIMITE DI 100 ELEMENTI ---
+            // Ora mostra TUTTA la lista completa.
+            // Dato che sono circa 230 elementi, i browser moderni lo gestiscono istantaneamente.
+            list.forEach(p => {
                 const li = document.createElement('li');
                 li.className = 'product-item';
                 
@@ -221,7 +216,6 @@
             const terms = term.split(/\s+/).filter(w => w.length > 0);
 
             const filtered = products.filter(p => {
-                // Ogni parola digitata deve essere presente nella stringa di ricerca del prodotto
                 return terms.every(t => p.searchString.includes(t));
             });
 
