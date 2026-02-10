@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>Listino Pet Food</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f2f2f7; 
+            margin: 0; 
+            padding: 0; 
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Header Fisso */
+        .search-container {
+            position: sticky;
+            top: 0;
+            background-color: rgba(242, 242, 247, 0.95);
+            padding: 10px 15px;
+            z-index: 1000;
+            border-bottom: 1px solid #c6c6c8;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Input Ricerca */
+        #search-input {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 17px;
+            border: none;
+            border-radius: 10px;
+            background-color: #e3e3e8;
+            color: #000;
+            outline: none;
+            box-sizing: border-box;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+        #search-input::placeholder { color: #8e8e93; }
+
+        /* Lista */
+        .product-list { 
+            list-style: none; 
+            padding: 0 15px 40px 15px; 
+            margin: 10px 0;
+        }
+
+        /* Card Prodotto */
+        .product-item {
+            background-color: #fff;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 5px;
+        }
+
+        .brand-name {
+            font-size: 17px;
+            font-weight: 700;
+            color: #000;
+            text-transform: uppercase;
+        }
+
+        .badge {
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .badge.cat { background-color: #e0f7fa; color: #006064; }
+        .badge.dog { background-color: #fff3e0; color: #e65100; }
+
+        .variant-name {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .pack-info {
+            font-size: 13px;
+            color: #8e8e93;
+        }
+
+        .no-results {
+            text-align: center;
+            color: #8e8e93;
+            margin-top: 40px;
+            font-size: 16px;
+        }
+        
+        /* Evidenzia keyword trovate */
+        .highlight { background-color: yellow; }
+    </style>
+</head>
+<body>
+
+    <div class="search-container">
+        <input type="search" id="search-input" placeholder="Cerca (es. Monge renal, gatto pollo)..." autocomplete="off">
+    </div>
+
+    <ul id="results-container" class="product-list"></ul>
+
+    <script>
+        // --- DATABASE PRODOTTI ---
+        // Ho strutturato i tuoi dati in questo array
+        const rawData = [
+            // --- GATTO ---
+            {t: "cat", b: "ADVANCE", w: "1,5 kg", v: ["Weight balance"]},
+            {t: "cat", b: "AMITY", w: "600g - 1,5kg - 10kg", v: ["Pollo e riso (kitten)", "Pollo e riso"]},
+            {t: "cat", b: "BRAVERY", w: "600g - 2kg - 7kg", v: ["Salmone (kitten)", "Aringa sterilizzati", "Pollo sterilizzati", "Salmone sterilizzati"]},
+            {t: "cat", b: "EXCLUSION", w: "", v: ["Pollo (kitten)", "Tonno sterilizzato", "Pollo sterilizzato", "Manzo sterilizzato", "Manzo", "Tonno"]},
+            {t: "cat", b: "EXCLUSION MEDICATI", w: "", v: ["Diabetic (maiale, sorgo e riso)", "Intestinal (maiale e riso)", "Renal (maiale, sorgo e riso)", "Ipoallergenico (idrolizzato al pesce)", "Ipoallergenico (maiale e piselli)", "Urinary (maiale, sorgo e riso)"]},
+            {t: "cat", b: "LEV", w: "300g - 1,5kg", v: ["Pollo e tacchino (kitten)", "Salmone", "Anatra", "Pollo e tacchino", "Maiale fresco", "Pollo e tacchino (sterilizzati)"]},
+            {t: "cat", b: "MATISSE", w: "10 kg", v: ["Salmone (sterilizzato)", "Pollo (sterilizzato)"]},
+            {t: "cat", b: "MONGE", w: "400g - 1,5kg - 10kg", v: ["Trota (kitten)", "Pollo (kitten)", "Merluzzo (sterilizzati)", "Trota (sterilizzati)", "Anatra (sterilizzati)", "Manzo (sterilizzati)", "Pollo (sterilizzati)", "Pollo", "Coniglio", "Salmone", "Tacchino (light)", "Pollo (Indoor)", "Pollo (Hairball)"]},
+            {t: "cat", b: "MONGE VET SOLUTION", w: "", v: ["Urinary oxalate", "Urinary struvite", "Obesity", "Dermatosis", "Diabetic", "Gastrointestinal"]},
+            {t: "cat", b: "MONGE SPECIAL CAT", w: "7 kg", v: ["Urinary", "Pollo"]},
+            {t: "cat", b: "MORANDO", w: "400g - 1,5kg", v: ["Pollo e salmone (kitten)", "Suino", "Manzo e suino", "Pollo (sterilizzato)", "Salmone (sterilizzato)"]},
+            {t: "cat", b: "GEMON", w: "2kg - 7kg", v: ["Pollo e riso (kitten)", "Manzo e riso (kitten)", "Salmone e riso (kitten)", "Pollo e tacchino", "Manzo (sterilizzato)", "Tacchino (sterilizzato)", "Tonno e salmone (sterilizzato)", "Pollo e riso (Urinary)"]},
+            {t: "cat", b: "HILL’S", w: "", v: ["Metabolic (1,5 kg)", "Urinary stress + metabolic", "Urinary care c/d multicare", "Urinary care s/d", "Gastrointestinal Biome", "y/d tiroide", "z/d sensibilità alimentare", "k/d renale"]},
+            {t: "cat", b: "RAFI", w: "", v: ["Agnello", "Salmone", "Pollo", "Manzo"]},
+            {t: "cat", b: "ROYAL CANIN", w: "", v: ["Hairball", "Sterilizzato", "Digestione", "Sterilizzato 7+", "Renal", "Renal special", "Hepatic", "Gastrointestinal fibre response", "Gastrointestinal", "Urinary", "Urinary s/o moderate calorie"]},
+            {t: "cat", b: "PURINA PROPLAN", w: "400g - 1,3kg - 10kg", v: ["Hypoallergenic", "Tacchino (sterilizzato + renal plus)", "Salmone (sterilizzato + renal plus)", "Trota e merluzzo (sterilizzato)", "Tacchino (senior)", "Liveclear al salmone (allergia umani)", "Pollo (kitten)", "Coniglio", "Anatra con fegato", "Tacchino (light)", "Agnello (digestione delicata)", "Tacchino (digestione delicata)", "Pollo (+ renal plus)", "Salmone (+ vital functional)", "Coniglio (+ renal plus)", "Tacchino (+ renal plus)"]},
+            {t: "cat", b: "SHESIR", w: "400g - 1,5kg", v: ["Pollo (kitten)", "Prosciutto (sterilizzato light)", "Pollo (sterilizzato light)", "Pesce (sterilizzato light)", "Hairball al pollo"]},
+            {t: "cat", b: "TRAINER", w: "300g - 1,5kg - 3kg - 10kg", v: ["Salmone (kitten)", "Prosciutto crudo", "Salmone", "Tacchino", "Pollo fresco", "Tonno", "Manzo", "Trota", "Anatra", "Urinary al pollo"]},
+
+            // --- CANE ---
+            {t: "dog", b: "AMITY", w: "3kg - 15kg - 18kg", v: ["Pollo (puppy)", "Pollo e agnello", "Maiale iberico e riso", "Agnello e riso", "Salmone e riso", "Manzo e riso", "Pollo e riso (cani giganti)", "Pollo e riso (senior & light)"]},
+            {t: "dog", b: "BRAVERY", w: "2kg - 4kg - 12kg", v: ["Salmone puppy", "Pollo puppy", "Salmone", "Agnello", "Maiale", "Aringa"]},
+            {t: "dog", b: "EXCLUSION", w: "2kg - 3kg - 12kg", v: ["Pollo puppy", "Manzo Puppy", "Tonno Puppy", "Pollo (light)", "Manzo", "Agnello", "Pollo", "Tonno", "Diabetic", "Intestinal", "Hypo pesce e patate", "Hypo maiale e piselli", "Hypo idrolizzato di pesce", "Renal", "Urinary", "Metabolic"]},
+            {t: "dog", b: "FARMINA", w: "800g - 7kg - 12kg", v: ["Agnello Puppy", "Merluzzo Puppy", "Pollo Puppy", "Anatra Puppy", "White (per pelo e lacrimazione)", "Agnello", "Anatra (sterilizzato)"]},
+            {t: "dog", b: "FIT ACTIVE", w: "800g - 4kg - 11kg - 15kg", v: ["Manzo e carote", "Coniglio e carote", "Hypo agnello e salmone", "Hypo agnello e verdure", "Hypo agnello e verdure (senior)", "Hypo agnello e verdure (Puppy)", "Hypo coniglio e carote", "Hypo Agnello e carote", "Hypo XXL agnello e verdure (Puppy junior)", "Hypo agnello e verdure (senior light)"]},
+            {t: "dog", b: "GEMON", w: "", v: ["Pollo e riso (puppy)", "Tonno e riso (puppy)", "Salmone e riso", "Pollo e riso", "Agnello e riso", "Maiale e riso", "Manzo e riso", "Tonno e riso", "Pollo (light)"]},
+            {t: "dog", b: "MONGE", w: "800g - 2,5kg - 7kg - 12kg", v: ["Pollo con uova (intestinal)", "Salmone e tonno (hypo)", "Agnello e riso (Puppy)", "Salmone e riso (Puppy)", "Agnello, riso e patate (Puppy)", "Pollo e riso (Puppy)", "Pollo e riso", "Salmone e riso", "Coniglio, patate e riso", "Trota, riso e patate", "Salmone (light)", "Pollo", "Manzo e riso", "Maiale, riso e patate", "Tacchino, riso e patate", "Anatra, riso e patate"]},
+            {t: "dog", b: "MONGE BE WILD", w: "2,5kg - 12kg", v: ["Acciughe, patate e piselli", "Anatra con patate", "Anatra con patate (Puppy)", "Agnello, patate e piselli", "Cinghiale", "Cervo", "Oca", "Salmone e piselli"]},
+            {t: "dog", b: "MORANDO", w: "", v: ["Manzo, piselli e barbabietola", "Pollo e avena", "Suino e ortaggi"]},
+            {t: "dog", b: "OASY", w: "2,5kg - 12kg", v: ["Agnello (Puppy)", "Salmone (puppy)", "Maiale", "Agnello", "Salmone"]},
+            {t: "dog", b: "ROYAL CANIN", w: "2kg - 4kg - 8kg", v: ["Puppy mini", "Adult Mini", "Adult medium", "Barboncini", "Spitz", "Starter", "Satiety", "Hepatic", "Gastrointestinal", "Gastrointestinal (Puppy)", "Renal", "Urinary S/O", "Hypoallergenic"]},
+            {t: "dog", b: "SHESIR", w: "2kg - 3kg - 12kg", v: ["Pesce", "Prosciutto", "Pollo", "Agnello"]},
+            {t: "dog", b: "TRAINER", w: "800g - 2kg - 3kg", v: ["Coniglio", "Agnello", "Maiale", "Salmone", "Prosciutto crudo", "Tonno", "Pesce bianco diliscato", "Manzo"]},
+            {t: "dog", b: "PURINA PROPLAN", w: "", v: ["EN Gastrointestinal", "NF Renal", "UR Urinary"]},
+            {t: "dog", b: "VETLIFE", w: "", v: ["Hypo pesce idrolizzato", "Dermatosis salmone", "Obesity al pollo"]}
+        ];
+
+        // "Appiattiamo" i dati per renderli facili da cercare
+        const products = [];
+        rawData.forEach(brandGroup => {
+            brandGroup.v.forEach(variant => {
+                products.push({
+                    type: brandGroup.t, // cat o dog
+                    brand: brandGroup.b,
+                    weight: brandGroup.w,
+                    name: variant,
+                    // Creiamo una stringa nascosta per la ricerca ottimizzata
+                    searchString: (brandGroup.t === 'cat' ? 'gatto cat ' : 'cane dog ') + 
+                                  brandGroup.b.toLowerCase() + " " + 
+                                  variant.toLowerCase() + " " + 
+                                  brandGroup.w.toLowerCase()
+                });
+            });
+        });
+
+        const searchInput = document.getElementById('search-input');
+        const resultsContainer = document.getElementById('results-container');
+
+        function displayProducts(list) {
+            resultsContainer.innerHTML = '';
+            
+            if (list.length === 0) {
+                resultsContainer.innerHTML = '<div class="no-results">Nessun prodotto trovato.</div>';
+                return;
+            }
+
+            // Limitiamo la visualizzazione iniziale per velocità se la lista è troppo lunga
+            const displayList = list.length > 100 ? list.slice(0, 100) : list;
+
+            displayList.forEach(p => {
+                const li = document.createElement('li');
+                li.className = 'product-item';
+                
+                const typeBadge = p.type === 'cat' 
+                    ? '<span class="badge cat">🐱 Gatto</span>' 
+                    : '<span class="badge dog">🐶 Cane</span>';
+
+                const weightHtml = p.weight ? `<div class="pack-info">⚖️ ${p.weight}</div>` : '';
+
+                li.innerHTML = `
+                    <div class="header-row">
+                        <span class="brand-name">${p.brand}</span>
+                        ${typeBadge}
+                    </div>
+                    <div class="variant-name">${p.name}</div>
+                    ${weightHtml}
+                `;
+                resultsContainer.appendChild(li);
+            });
+        }
+
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase().trim();
+            
+            if (!term) {
+                displayProducts(products); // Mostra tutto se vuoto
+                return;
+            }
+
+            const terms = term.split(/\s+/).filter(w => w.length > 0);
+
+            const filtered = products.filter(p => {
+                // Ogni parola digitata deve essere presente nella stringa di ricerca del prodotto
+                return terms.every(t => p.searchString.includes(t));
+            });
+
+            displayProducts(filtered);
+        });
+
+        // Mostra tutto all'avvio
+        displayProducts(products);
+
+    </script>
+</body>
+</html>
