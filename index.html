@@ -43,7 +43,7 @@
         }
         #search-input::placeholder { color: #8e8e93; }
 
-        /* TABS (Segmented Control Style) */
+        /* TABS */
         .tabs {
             display: flex;
             background-color: #e3e3e8;
@@ -77,15 +77,46 @@
             margin: 10px 0;
         }
 
-        /* Card Prodotto */
+        /* Card Prodotto (Contenitore) */
         .product-item {
             background-color: #fff;
-            padding: 15px;
             margin-bottom: 10px;
             border-radius: 12px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden; /* Fondamentale per l'animazione */
+            transition: box-shadow 0.2s ease;
+        }
+        
+        /* Stato espanso (ombra più marcata) */
+        .product-item.expanded {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        /* Intestazione Card (Sempre visibile) */
+        .product-header {
+            padding: 15px;
+            cursor: pointer;
             display: flex;
             flex-direction: column;
+            position: relative; /* Per posizionare la freccia */
+        }
+
+        /* Freccina animata */
+        .product-header::after {
+            content: '›';
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%) rotate(90deg);
+            font-size: 22px;
+            color: #c7c7cc;
+            transition: transform 0.3s ease;
+            font-weight: 300;
+        }
+
+        .product-item.expanded .product-header::after {
+            transform: translateY(-50%) rotate(-90deg); /* Ruota in su */
+            color: #007aff;
         }
 
         .header-row {
@@ -93,6 +124,7 @@
             justify-content: space-between;
             align-items: baseline;
             margin-bottom: 5px;
+            padding-right: 20px; /* Spazio per la freccia */
         }
 
         .brand-name {
@@ -111,6 +143,43 @@
         .pack-info {
             font-size: 13px;
             color: #8e8e93;
+        }
+
+        /* DETTAGLI NASCOSTI (Animazione) */
+        .product-details {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+            background-color: #f9f9f9;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        /* Quando è espanso */
+        .product-item.expanded .product-details {
+            max-height: 500px; /* Abbastanza alto da contenere tutto */
+            opacity: 1;
+        }
+
+        .details-content {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .product-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+            background-color: #eee;
+        }
+
+        .description {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.5;
         }
 
         .no-results {
@@ -135,7 +204,7 @@
     <ul id="results-container" class="product-list"></ul>
 
     <script>
-        // --- DATABASE DATI ---
+        // --- DATABASE ---
         const rawData = [
             // --- GATTO ---
             {t: "cat", b: "ADVANCE", w: "1,5 kg", v: ["Weight balance"]},
@@ -180,7 +249,7 @@
         rawData.forEach(brandGroup => {
             brandGroup.v.forEach(variant => {
                 products.push({
-                    type: brandGroup.t, // 'cat' o 'dog'
+                    type: brandGroup.t, 
                     brand: brandGroup.b,
                     weight: brandGroup.w,
                     name: variant,
@@ -191,8 +260,8 @@
             });
         });
 
-        // --- STATO DELL'APP ---
-        let currentTab = 'cat'; // Default: gatto
+        // --- STATO ---
+        let currentTab = 'cat'; 
         let currentSearch = '';
 
         const searchInput = document.getElementById('search-input');
@@ -200,11 +269,8 @@
         const btnCat = document.getElementById('btn-cat');
         const btnDog = document.getElementById('btn-dog');
 
-        // Funzione per cambiare Tab
         function setTab(tab) {
             currentTab = tab;
-            
-            // Aggiorna stile bottoni
             if (tab === 'cat') {
                 btnCat.classList.add('active');
                 btnDog.classList.remove('active');
@@ -212,20 +278,23 @@
                 btnCat.classList.remove('active');
                 btnDog.classList.add('active');
             }
-
-            // Rilancia la ricerca/filtro
             filterAndDisplay();
         }
 
-        // Funzione principale di filtro e visualizzazione
+        // Funzione per generare un'immagine placeholder carina
+        function getImageUrl(text) {
+            // Crea un colore di sfondo casuale pastello per varietà
+            const colors = ['e0f7fa', 'fff3e0', 'f3e5f5', 'e8f5e9', 'e3f2fd'];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            const cleanText = text.replace(/[^a-zA-Z0-9 ]/g, "").split(" ").slice(0, 3).join("+");
+            return `https://placehold.co/600x400/${randomColor}/444?text=${cleanText}&font=roboto`;
+        }
+
         function filterAndDisplay() {
             const terms = currentSearch.split(/\s+/).filter(w => w.length > 0);
 
             const filtered = products.filter(p => {
-                // 1. Filtra per Tab (Gatto o Cane)
                 if (p.type !== currentTab) return false;
-
-                // 2. Filtra per Ricerca (se c'è testo)
                 if (terms.length === 0) return true;
                 return terms.every(t => p.searchString.includes(t));
             });
@@ -237,7 +306,7 @@
             resultsContainer.innerHTML = '';
             
             if (list.length === 0) {
-                resultsContainer.innerHTML = '<div class="no-results">Nessun prodotto trovato in questa categoria.</div>';
+                resultsContainer.innerHTML = '<div class="no-results">Nessun prodotto trovato.</div>';
                 return;
             }
 
@@ -245,27 +314,43 @@
                 const li = document.createElement('li');
                 li.className = 'product-item';
                 
-                // Non serve più il badge Gatto/Cane perché siamo già nel tab specifico
-                const weightHtml = p.weight ? `<div class="pack-info">⚖️ ${p.weight}</div>` : '';
+                // Funzione Click per espandere
+                li.onclick = function() {
+                    this.classList.toggle('expanded');
+                };
+
+                const weightHtml = p.weight ? `<div class="pack-info">⚖️ Formati: ${p.weight}</div>` : '';
+                
+                // Genera immagine e testo dinamico
+                const imageUrl = getImageUrl(p.brand + " " + p.name);
+                const descriptionText = `Scheda tecnica per <strong>${p.brand} - ${p.name}</strong>.<br>Questo prodotto fa parte della linea ${p.type === 'cat' ? 'Gatto' : 'Cane'}. <br><br>Disponibile nei formati indicati.`;
 
                 li.innerHTML = `
-                    <div class="header-row">
-                        <span class="brand-name">${p.brand}</span>
+                    <div class="product-header">
+                        <div class="header-row">
+                            <span class="brand-name">${p.brand}</span>
+                        </div>
+                        <div class="variant-name">${p.name}</div>
+                        ${weightHtml}
                     </div>
-                    <div class="variant-name">${p.name}</div>
-                    ${weightHtml}
+                    
+                    <div class="product-details">
+                        <div class="details-content">
+                            <img src="${imageUrl}" class="product-img" loading="lazy" alt="${p.name}">
+                            <p class="description">${descriptionText}</p>
+                        </div>
+                    </div>
                 `;
                 resultsContainer.appendChild(li);
             });
         }
 
-        // Event Listener per la ricerca
         searchInput.addEventListener('input', (e) => {
             currentSearch = e.target.value.toLowerCase().trim();
             filterAndDisplay();
         });
 
-        // Avvio iniziale
+        // Avvio
         filterAndDisplay();
 
     </script>
