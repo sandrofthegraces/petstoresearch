@@ -89,13 +89,12 @@
     </div>
 
     <script>
-        // RILEVATORE DI ERRORI GLOBALE
         window.onerror = function(message, source, lineno, colno, error) {
             document.getElementById('global-error').style.display = 'flex';
             document.getElementById('error-msg').innerHTML = 
                 `<strong>Messaggio:</strong> ${message}<br><br>` +
                 `<strong>Riga:</strong> ${lineno}<br>` +
-                `<strong>Possibile Causa:</strong> Errore di sintassi, variabile non definita o credenziali Supabase errate.`;
+                `<strong>Consiglio:</strong> Controlla di aver incollato URL e KEY in fondo al file.`;
         };
     </script>
 
@@ -178,14 +177,17 @@
         let currentTab = 'cat';
         let searchTerm = '';
         const listEl = document.getElementById('list');
-        let supabase;
+        
+        // HO RINOMINATO 'supabase' in 'sb' PER EVITARE CONFLITTI!
+        let sb; 
 
-        // INIZIALIZZAZIONE CON TRY/CATCH
+        // INIZIALIZZAZIONE
         try {
             if (!SUPABASE_URL || SUPABASE_URL.includes("INCOLLA")) {
                 throw new Error("Hai dimenticato di inserire URL e KEY in fondo al codice!");
             }
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            // Usa window.supabase che è la libreria, per creare il client 'sb'
+            sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
             fetchProducts();
         } catch (e) {
             listEl.innerHTML = `<div class="loading" style="color:red">Errore Iniziale: ${e.message}</div>`;
@@ -196,7 +198,7 @@
             listEl.innerHTML = '<div class="loading">Connessione al database...</div>';
             
             try {
-                const { data, error } = await supabase
+                const { data, error } = await sb
                     .from('products')
                     .select('*')
                     .order('brand', { ascending: true });
@@ -351,9 +353,9 @@
         async function uploadImage(file) {
             if (!file) return null;
             const fileName = Date.now() + '-' + file.name.replace(/\s+/g, '-');
-            const { data, error } = await supabase.storage.from('images').upload(fileName, file);
+            const { data, error } = await sb.storage.from('images').upload(fileName, file);
             if (error) throw error;
-            const { data: publicData } = supabase.storage.from('images').getPublicUrl(fileName);
+            const { data: publicData } = sb.storage.from('images').getPublicUrl(fileName);
             return publicData.publicUrl;
         }
 
@@ -386,9 +388,9 @@
                 if(!dataPayload.brand || !dataPayload.name) throw new Error("Marca e Nome obbligatori!");
 
                 if (id) {
-                    await supabase.from('products').update(dataPayload).eq('id', id);
+                    await sb.from('products').update(dataPayload).eq('id', id);
                 } else {
-                    await supabase.from('products').insert([dataPayload]);
+                    await sb.from('products').insert([dataPayload]);
                 }
 
                 await fetchProducts(); // Ricarica la lista
@@ -402,7 +404,7 @@
 
         async function del(id, name) {
             if(confirm(`Eliminare ${name}?`)) {
-                await supabase.from('products').delete().eq('id', id);
+                await sb.from('products').delete().eq('id', id);
                 fetchProducts();
             }
         }
