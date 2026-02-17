@@ -3,19 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-title" content="PetManager">
     <title>Listino Pet Food</title>
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        /* STILE iOS */
+        /* STILE BASE */
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f2f2f7; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         
         .header { position: sticky; top: 0; background: rgba(242, 242, 247, 0.95); padding: 10px 15px; z-index: 100; border-bottom: 1px solid #c6c6c8; backdrop-filter: blur(10px); }
         .title { font-size: 22px; font-weight: 800; margin-bottom: 10px; display: block; }
-        #search { width: 100%; padding: 10px 12px; font-size: 17px; border: none; border-radius: 10px; background: #e3e3e8; outline: none; margin-bottom: 10px; -webkit-appearance: none; box-sizing: border-box; }
+        #search { width: 100%; padding: 10px 12px; font-size: 17px; border: none; border-radius: 10px; background: #e3e3e8; outline: none; margin-bottom: 10px; box-sizing: border-box; }
         
         .tabs { display: flex; background: #e3e3e8; border-radius: 9px; padding: 2px; }
         .tab-btn { flex: 1; border: none; background: transparent; padding: 6px 0; font-size: 14px; font-weight: 500; border-radius: 7px; cursor: pointer; transition: 0.2s; }
@@ -69,9 +67,37 @@
         .btn-cancel { background: #e5e5ea; color: black; }
         
         .loading { text-align: center; padding: 40px; color: #888; font-size: 14px; }
+        
+        /* BOX ERRORE GLOBALE */
+        #global-error { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.8); z-index: 9999; color: white; 
+            align-items: center; justify-content: center; text-align: left; padding: 20px; 
+            box-sizing: border-box; 
+        }
+        .error-content { background: #333; padding: 20px; border-radius: 10px; border: 2px solid #ff3b30; width: 100%; max-width: 500px; }
     </style>
 </head>
 <body>
+
+    <div id="global-error">
+        <div class="error-content">
+            <h3 style="color:#ff3b30; margin-top:0">⚠️ ERRORE RILEVATO</h3>
+            <p id="error-msg">...</p>
+            <button onclick="location.reload()" style="padding:10px; margin-top:10px; width:100%">Ricarica Pagina</button>
+        </div>
+    </div>
+
+    <script>
+        // RILEVATORE DI ERRORI GLOBALE
+        window.onerror = function(message, source, lineno, colno, error) {
+            document.getElementById('global-error').style.display = 'flex';
+            document.getElementById('error-msg').innerHTML = 
+                `<strong>Messaggio:</strong> ${message}<br><br>` +
+                `<strong>Riga:</strong> ${lineno}<br>` +
+                `<strong>Possibile Causa:</strong> Errore di sintassi, variabile non definita o credenziali Supabase errate.`;
+        };
+    </script>
 
     <div class="header">
         <span class="title">📦 Magazzino</span>
@@ -83,7 +109,7 @@
     </div>
 
     <ul id="list">
-        <div class="loading">Caricamento prodotti...</div>
+        <div class="loading">In attesa di Supabase...</div>
     </ul>
 
     <button class="fab" onclick="openModal()">+</button>
@@ -144,62 +170,57 @@
 
     <script>
         // 🔴🔴🔴 INCOLLA QUI I DATI DI SUPABASE 🔴🔴🔴
-        const SUPABASE_URL = 'https://uclxbadqwqrfpowmepzg.supabase.co'; // es: https://xyz.supabase.co
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVjbHhiYWRxd3FyZnBvd21lcHpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMDkwNjgsImV4cCI6MjA4Njg4NTA2OH0.VI1I6JB2n9QwueYGDiKebRVIvDVl6kYd0agEw7pdw8I'; // es: eyJhbG...
+        const SUPABASE_URL = 'https://uclxbadqwqrfpowmepzg.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVjbHhiYWRxd3FyZnBvd21lcHpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMDkwNjgsImV4cCI6MjA4Njg4NTA2OH0.VI1I6JB2n9QwueYGDiKebRVIvDVl6kYd0agEw7pdw8I';
         // -----------------------------------------------------------
-
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let products = [];
         let currentTab = 'cat';
         let searchTerm = '';
         const listEl = document.getElementById('list');
+        let supabase;
 
-        // --- CARICAMENTO DATI (VERSIONE DEBUG) ---
+        // INIZIALIZZAZIONE CON TRY/CATCH
+        try {
+            if (!SUPABASE_URL || SUPABASE_URL.includes("INCOLLA")) {
+                throw new Error("Hai dimenticato di inserire URL e KEY in fondo al codice!");
+            }
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            fetchProducts();
+        } catch (e) {
+            listEl.innerHTML = `<div class="loading" style="color:red">Errore Iniziale: ${e.message}</div>`;
+        }
+
+        // CARICAMENTO DATI
         async function fetchProducts() {
-            listEl.innerHTML = '<div class="loading">Sto contattando Supabase...</div>';
+            listEl.innerHTML = '<div class="loading">Connessione al database...</div>';
             
             try {
-                // Prova a chiedere i dati
                 const { data, error } = await supabase
                     .from('products')
                     .select('*')
                     .order('brand', { ascending: true });
                 
-                // Se Supabase risponde con un errore, mostralo a video
                 if (error) {
-                    console.error("Errore Supabase:", error); // Per chi sa usare la console
-                    listEl.innerHTML = `
-                        <div class="loading" style="color:red; text-align:left; padding:20px;">
-                            <strong>ERRORE:</strong><br>
-                            ${error.message}<br><br>
-                            <em>Suggerimento: Controlla di aver eseguito l'SQL o che l'URL sia giusto.</em>
-                        </div>`;
+                    listEl.innerHTML = `<div class="loading" style="color:red">Errore Supabase: ${error.message}<br>Controlla la console per dettagli.</div>`;
+                    return;
+                }
+                
+                if (!data || data.length === 0) {
+                    listEl.innerHTML = `<div class="loading">Database collegato ma VUOTO.<br>Usa l'importatore o premi + per aggiungere.</div>`;
+                    products = [];
                     return;
                 }
 
-                // Se i dati sono vuoti
-                if (!data || data.length === 0) {
-                     listEl.innerHTML = '<div class="loading">Database collegato, ma vuoto!<br>Premi + per aggiungere un prodotto.</div>';
-                     products = [];
-                     return;
-                }
-
-                // Tutto ok!
                 products = data;
                 render();
 
             } catch (err) {
-                // Errore generico di connessione (es. URL sbagliato)
-                listEl.innerHTML = `
-                    <div class="loading" style="color:red">
-                        <strong>ERRORE CONNESSIONE:</strong><br>
-                        ${err.message}
-                    </div>`;
+                listEl.innerHTML = `<div class="loading" style="color:red">Errore Critico: ${err.message}</div>`;
             }
         }
 
-        // --- RENDER ---
+        // RENDER
         function render() {
             listEl.innerHTML = '';
             const terms = searchTerm.split(" ").filter(t => t);
@@ -270,7 +291,7 @@
             render();
         });
 
-        // --- GESTIONE FILE E SALVATAGGIO ---
+        // GESTIONE MODALE E FILE
         const modal = document.getElementById('modal');
 
         function updateLabel(type) {
@@ -385,10 +406,6 @@
                 fetchProducts();
             }
         }
-
-        // AVVIO
-        fetchProducts();
-
     </script>
 </body>
 </html>
