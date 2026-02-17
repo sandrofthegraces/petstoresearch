@@ -4,270 +4,282 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="PetManager">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>Listino Pet Food</title>
+    
     <style>
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f2f2f7; 
-            margin: 0; 
-            padding: 0; 
-            -webkit-tap-highlight-color: transparent;
-        }
+        /* CSS BASE (Stile iOS) */
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f2f2f7; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        
+        /* HEADER */
+        .header { position: sticky; top: 0; background: rgba(242, 242, 247, 0.95); padding: 10px 15px; z-index: 100; border-bottom: 1px solid #c6c6c8; backdrop-filter: blur(10px); }
+        .title { font-size: 22px; font-weight: 800; margin-bottom: 10px; display: block; }
+        
+        #search { width: 100%; padding: 10px 12px; font-size: 17px; border: none; border-radius: 10px; background: #e3e3e8; outline: none; margin-bottom: 10px; -webkit-appearance: none; box-sizing: border-box; }
+        
+        /* TABS */
+        .tabs { display: flex; background: #e3e3e8; border-radius: 9px; padding: 2px; }
+        .tab-btn { flex: 1; border: none; background: transparent; padding: 6px 0; font-size: 14px; font-weight: 500; border-radius: 7px; cursor: pointer; transition: 0.2s; }
+        .tab-btn.active { background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-weight: 600; }
 
-        /* Header Fisso */
-        .header-container {
-            position: sticky;
-            top: 0;
-            background-color: rgba(242, 242, 247, 0.95);
-            padding: 10px 15px;
-            z-index: 1000;
-            border-bottom: 1px solid #c6c6c8;
-            backdrop-filter: blur(10px);
-        }
+        /* LISTA */
+        ul { list-style: none; padding: 0 15px 100px 15px; margin: 15px 0; }
+        
+        /* CARD PRODOTTO */
+        .card { background: #fff; margin-bottom: 12px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden; position: relative; transition: all 0.3s ease; }
+        
+        /* HEADER CARD */
+        .card-header { padding: 15px; cursor: pointer; position: relative; }
+        .card-header::after { content: '›'; position: absolute; right: 15px; top: 50%; transform: translateY(-50%) rotate(90deg); font-size: 22px; color: #c7c7cc; transition: 0.3s; }
+        .card.expanded .card-header::after { transform: translateY(-50%) rotate(-90deg); color: #007aff; }
 
-        /* Input Ricerca */
-        #search-input {
-            width: 100%;
-            padding: 10px 12px;
-            font-size: 17px;
-            border: none;
-            border-radius: 10px;
-            background-color: #e3e3e8;
-            color: #000;
-            outline: none;
-            box-sizing: border-box;
-            appearance: none;
-            -webkit-appearance: none;
-            margin-bottom: 10px;
-        }
-        #search-input::placeholder { color: #8e8e93; }
+        .brand { font-size: 17px; font-weight: 700; text-transform: uppercase; color: #000; }
+        .name { font-size: 16px; color: #333; margin-top: 4px; padding-right: 20px; }
+        .weight { font-size: 13px; color: #888; margin-top: 4px; font-weight: 500; }
 
-        /* TABS (Segmented Control Style) */
-        .tabs {
-            display: flex;
-            background-color: #e3e3e8;
-            border-radius: 9px;
-            padding: 2px;
-        }
+        /* DETTAGLI (Nascosti) */
+        .details { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; background: #fafafa; border-top: 1px solid #eee; }
+        .card.expanded .details { max-height: 1000px; } /* Valore alto per permettere l'apertura */
+        
+        .content { padding: 15px; display: flex; flex-direction: column; gap: 12px; }
+        .prod-img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; background: #eee; }
+        .desc { font-size: 15px; line-height: 1.5; color: #444; white-space: pre-wrap; }
 
-        .tab-btn {
-            flex: 1;
-            border: none;
-            background: transparent;
-            padding: 6px 0;
-            font-size: 14px;
-            font-weight: 500;
-            border-radius: 7px;
-            cursor: pointer;
-            color: #000;
-            transition: all 0.2s ease;
-        }
+        /* AZIONI */
+        .actions { display: flex; gap: 10px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; }
+        .btn { flex: 1; padding: 12px; border-radius: 8px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .btn-edit { background: #ff9500; color: white; }
+        .btn-del { background: #ff3b30; color: white; }
 
-        .tab-btn.active {
-            background-color: #fff;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
-            font-weight: 600;
-        }
+        /* FAB (+) */
+        .fab { position: fixed; bottom: 30px; right: 20px; width: 56px; height: 56px; background: #007aff; border-radius: 50%; color: white; border: none; font-size: 30px; box-shadow: 0 4px 12px rgba(0,122,255,0.4); cursor: pointer; z-index: 200; display: flex; align-items: center; justify-content: center; }
+        
+        /* MODALE */
+        .modal-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 500; display: none; align-items: flex-end; justify-content: center; backdrop-filter: blur(2px); }
+        .modal-bg.open { display: flex; }
+        .modal { background: #fff; width: 100%; max-width: 600px; border-radius: 20px 20px 0 0; padding: 25px; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); animation: slideUp 0.3s; max-height: 90vh; overflow-y: auto; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-        /* Lista */
-        .product-list { 
-            list-style: none; 
-            padding: 0 15px 40px 15px; 
-            margin: 10px 0;
-        }
-
-        /* Card Prodotto */
-        .product-item {
-            background-color: #fff;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .header-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            margin-bottom: 5px;
-        }
-
-        .brand-name {
-            font-size: 17px;
-            font-weight: 700;
-            color: #000;
-            text-transform: uppercase;
-        }
-
-        .variant-name {
-            font-size: 16px;
-            color: #333;
-            margin-bottom: 4px;
-        }
-
-        .pack-info {
-            font-size: 13px;
-            color: #8e8e93;
-        }
-
-        .no-results {
-            text-align: center;
-            color: #8e8e93;
-            margin-top: 40px;
-            font-size: 16px;
-        }
+        .field { margin-bottom: 15px; }
+        .label { display: block; font-size: 12px; color: #666; margin-bottom: 5px; font-weight: 700; text-transform: uppercase; }
+        .input, select, textarea { width: 100%; padding: 12px; font-size: 16px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; background: #f9f9f9; -webkit-appearance: none; }
+        textarea { height: 100px; resize: none; font-family: inherit; }
+        
+        .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-save { background: #007aff; color: white; }
+        .btn-cancel { background: #e5e5ea; color: black; }
+        
+        .loading { text-align: center; padding: 40px; color: #888; font-size: 14px; }
     </style>
 </head>
 <body>
 
-    <div class="header-container">
-        <input type="search" id="search-input" placeholder="Cerca..." autocomplete="off">
-        
+    <div class="header">
+        <span class="title">📦 Magazzino</span>
+        <input type="search" id="search" placeholder="Cerca prodotto..." autocomplete="off">
         <div class="tabs">
-            <button class="tab-btn active" onclick="setTab('cat')" id="btn-cat">🐱 Gatto</button>
-            <button class="tab-btn" onclick="setTab('dog')" id="btn-dog">🐶 Cane</button>
+            <button class="tab-btn active" onclick="setTab('cat')" id="tab-cat">🐱 Gatto</button>
+            <button class="tab-btn" onclick="setTab('dog')" id="tab-dog">🐶 Cane</button>
         </div>
     </div>
 
-    <ul id="results-container" class="product-list"></ul>
+    <ul id="list">
+        <div class="loading">Connessione al database...</div>
+    </ul>
+
+    <button class="fab" onclick="openModal()">+</button>
+
+    <div class="modal-bg" id="modal">
+        <div class="modal">
+            <h2 id="modal-title" style="margin-top:0; margin-bottom:20px;">Nuovo Prodotto</h2>
+            <input type="hidden" id="edit-id">
+            
+            <div class="field">
+                <label class="label">Categoria</label>
+                <select id="inp-type"><option value="cat">Gatto</option><option value="dog">Cane</option></select>
+            </div>
+            <div class="field">
+                <label class="label">Marca</label>
+                <input type="text" id="inp-brand" class="input" placeholder="Es. Monge">
+            </div>
+            <div class="field">
+                <label class="label">Nome Variante</label>
+                <input type="text" id="inp-name" class="input" placeholder="Es. Renal">
+            </div>
+            <div class="field">
+                <label class="label">Formati / Peso</label>
+                <input type="text" id="inp-weight" class="input" placeholder="Es. 1.5kg">
+            </div>
+            <div class="field">
+                <label class="label">Link Immagine (Opzionale)</label>
+                <input type="text" id="inp-img" class="input" placeholder="https://...">
+            </div>
+            <div class="field">
+                <label class="label">Descrizione</label>
+                <textarea id="inp-desc" placeholder="Inserisci note o descrizione..."></textarea>
+            </div>
+            
+            <div class="modal-btns">
+                <button class="btn btn-cancel" onclick="closeModal()">Annulla</button>
+                <button class="btn btn-save" onclick="saveData()">Salva</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
     <script>
-        // --- DATABASE DATI ---
-        const rawData = [
-            // --- GATTO ---
-            {t: "cat", b: "ADVANCE", w: "1,5 kg", v: ["Weight balance"]},
-            {t: "cat", b: "AMITY", w: "600g - 1,5kg - 10kg", v: ["Pollo e riso (kitten)", "Pollo e riso"]},
-            {t: "cat", b: "BRAVERY", w: "600g - 2kg - 7kg", v: ["Salmone (kitten)", "Aringa sterilizzati", "Pollo sterilizzati", "Salmone sterilizzati"]},
-            {t: "cat", b: "EXCLUSION", w: "", v: ["Pollo (kitten)", "Tonno sterilizzato", "Pollo sterilizzato", "Manzo sterilizzato", "Manzo", "Tonno"]},
-            {t: "cat", b: "EXCLUSION MEDICATI", w: "", v: ["Diabetic (maiale, sorgo e riso)", "Intestinal (maiale e riso)", "Renal (maiale, sorgo e riso)", "Ipoallergenico (idrolizzato al pesce)", "Ipoallergenico (maiale e piselli)", "Urinary (maiale, sorgo e riso)"]},
-            {t: "cat", b: "LEV", w: "300g - 1,5kg", v: ["Pollo e tacchino (kitten)", "Salmone", "Anatra", "Pollo e tacchino", "Maiale fresco", "Pollo e tacchino (sterilizzati)"]},
-            {t: "cat", b: "MATISSE", w: "10 kg", v: ["Salmone (sterilizzato)", "Pollo (sterilizzato)"]},
-            {t: "cat", b: "MONGE", w: "400g - 1,5kg - 10kg", v: ["Trota (kitten)", "Pollo (kitten)", "Merluzzo (sterilizzati)", "Trota (sterilizzati)", "Anatra (sterilizzati)", "Manzo (sterilizzati)", "Pollo (sterilizzati)", "Pollo", "Coniglio", "Salmone", "Tacchino (light)", "Pollo (Indoor)", "Pollo (Hairball)"]},
-            {t: "cat", b: "MONGE VET SOLUTION", w: "", v: ["Urinary oxalate", "Urinary struvite", "Obesity", "Dermatosis", "Diabetic", "Gastrointestinal"]},
-            {t: "cat", b: "MONGE SPECIAL CAT", w: "7 kg", v: ["Urinary", "Pollo"]},
-            {t: "cat", b: "MORANDO", w: "400g - 1,5kg", v: ["Pollo e salmone (kitten)", "Suino", "Manzo e suino", "Pollo (sterilizzato)", "Salmone (sterilizzato)"]},
-            {t: "cat", b: "GEMON", w: "2kg - 7kg", v: ["Pollo e riso (kitten)", "Manzo e riso (kitten)", "Salmone e riso (kitten)", "Pollo e tacchino", "Manzo (sterilizzato)", "Tacchino (sterilizzato)", "Tonno e salmone (sterilizzato)", "Pollo e riso (Urinary)"]},
-            {t: "cat", b: "HILL’S", w: "", v: ["Metabolic (1,5 kg)", "Urinary stress + metabolic", "Urinary care c/d multicare", "Urinary care s/d", "Gastrointestinal Biome", "y/d tiroide", "z/d sensibilità alimentare", "k/d renale"]},
-            {t: "cat", b: "RAFI", w: "", v: ["Agnello", "Salmone", "Pollo", "Manzo"]},
-            {t: "cat", b: "ROYAL CANIN", w: "", v: ["Hairball", "Sterilizzato", "Digestione", "Sterilizzato 7+", "Renal", "Renal special", "Hepatic", "Gastrointestinal fibre response", "Gastrointestinal", "Urinary", "Urinary s/o moderate calorie"]},
-            {t: "cat", b: "PURINA PROPLAN", w: "400g - 1,3kg - 10kg", v: ["Hypoallergenic", "Tacchino (sterilizzato + renal plus)", "Salmone (sterilizzato + renal plus)", "Trota e merluzzo (sterilizzato)", "Tacchino (senior)", "Liveclear al salmone (allergia umani)", "Pollo (kitten)", "Coniglio", "Anatra con fegato", "Tacchino (light)", "Agnello (digestione delicata)", "Tacchino (digestione delicata)", "Pollo (+ renal plus)", "Salmone (+ vital functional)", "Coniglio (+ renal plus)", "Tacchino (+ renal plus)"]},
-            {t: "cat", b: "SHESIR", w: "400g - 1,5kg", v: ["Pollo (kitten)", "Prosciutto (sterilizzato light)", "Pollo (sterilizzato light)", "Pesce (sterilizzato light)", "Hairball al pollo"]},
-            {t: "cat", b: "TRAINER", w: "300g - 1,5kg - 3kg - 10kg", v: ["Salmone (kitten)", "Prosciutto crudo", "Salmone", "Tacchino", "Pollo fresco", "Tonno", "Manzo", "Trota", "Anatra", "Urinary al pollo"]},
+        // 🔴🔴🔴 INCOLLA QUI LA TUA CONFIGURAZIONE FIREBASE 🔴🔴🔴
+        const firebaseConfig = {
+  		        apiKey: "AIzaSyB9tP883wC_HloNtLYdID08jY5gyFkrTDg",
+  		        authDomain: "petstoremanager-1626c.firebaseapp.com",
+  		        projectId: "petstoremanager-1626c",
+		        storageBucket: "petstoremanager-1626c.firebasestorage.app",
+  		        messagingSenderId: "1037174805362",
+		        appId: "1:1037174805362:web:c848c08ca34ee5b58f43eb"
+	    };
+        // -----------------------------------------------------------
 
-            // --- CANE ---
-            {t: "dog", b: "AMITY", w: "3kg - 15kg - 18kg", v: ["Pollo (puppy)", "Pollo e agnello", "Maiale iberico e riso", "Agnello e riso", "Salmone e riso", "Manzo e riso", "Pollo e riso (cani giganti)", "Pollo e riso (senior & light)"]},
-            {t: "dog", b: "BRAVERY", w: "2kg - 4kg - 12kg", v: ["Salmone puppy", "Pollo puppy", "Salmone", "Agnello", "Maiale", "Aringa"]},
-            {t: "dog", b: "EXCLUSION", w: "2kg - 3kg - 12kg", v: ["Pollo puppy", "Manzo Puppy", "Tonno Puppy", "Pollo (light)", "Manzo", "Agnello", "Pollo", "Tonno", "Diabetic", "Intestinal", "Hypo pesce e patate", "Hypo maiale e piselli", "Hypo idrolizzato di pesce", "Renal", "Urinary", "Metabolic"]},
-            {t: "dog", b: "FARMINA", w: "800g - 7kg - 12kg", v: ["Agnello Puppy", "Merluzzo Puppy", "Pollo Puppy", "Anatra Puppy", "White (per pelo e lacrimazione)", "Agnello", "Anatra (sterilizzato)"]},
-            {t: "dog", b: "FIT ACTIVE", w: "800g - 4kg - 11kg - 15kg", v: ["Manzo e carote", "Coniglio e carote", "Hypo agnello e salmone", "Hypo agnello e verdure", "Hypo agnello e verdure (senior)", "Hypo agnello e verdure (Puppy)", "Hypo coniglio e carote", "Hypo Agnello e carote", "Hypo XXL agnello e verdure (Puppy junior)", "Hypo agnello e verdure (senior light)"]},
-            {t: "dog", b: "GEMON", w: "", v: ["Pollo e riso (puppy)", "Tonno e riso (puppy)", "Salmone e riso", "Pollo e riso", "Agnello e riso", "Maiale e riso", "Manzo e riso", "Tonno e riso", "Pollo (light)"]},
-            {t: "dog", b: "MONGE", w: "800g - 2,5kg - 7kg - 12kg", v: ["Pollo con uova (intestinal)", "Salmone e tonno (hypo)", "Agnello e riso (Puppy)", "Salmone e riso (Puppy)", "Agnello, riso e patate (Puppy)", "Pollo e riso (Puppy)", "Pollo e riso", "Salmone e riso", "Coniglio, patate e riso", "Trota, riso e patate", "Salmone (light)", "Pollo", "Manzo e riso", "Maiale, riso e patate", "Tacchino, riso e patate", "Anatra, riso e patate"]},
-            {t: "dog", b: "MONGE BE WILD", w: "2,5kg - 12kg", v: ["Acciughe, patate e piselli", "Anatra con patate", "Anatra con patate (Puppy)", "Agnello, patate e piselli", "Cinghiale", "Cervo", "Oca", "Salmone e piselli"]},
-            {t: "dog", b: "MORANDO", w: "", v: ["Manzo, piselli e barbabietola", "Pollo e avena", "Suino e ortaggi"]},
-            {t: "dog", b: "OASY", w: "2,5kg - 12kg", v: ["Agnello (Puppy)", "Salmone (puppy)", "Maiale", "Agnello", "Salmone"]},
-            {t: "dog", b: "ROYAL CANIN", w: "2kg - 4kg - 8kg", v: ["Puppy mini", "Adult Mini", "Adult medium", "Barboncini", "Spitz", "Starter", "Satiety", "Hepatic", "Gastrointestinal", "Gastrointestinal (Puppy)", "Renal", "Urinary S/O", "Hypoallergenic"]},
-            {t: "dog", b: "SHESIR", w: "2kg - 3kg - 12kg", v: ["Pesce", "Prosciutto", "Pollo", "Agnello"]},
-            {t: "dog", b: "TRAINER", w: "800g - 2kg - 3kg", v: ["Coniglio", "Agnello", "Maiale", "Salmone", "Prosciutto crudo", "Tonno", "Pesce bianco diliscato", "Manzo"]},
-            {t: "dog", b: "PURINA PROPLAN", w: "", v: ["EN Gastrointestinal", "NF Renal", "UR Urinary"]},
-            {t: "dog", b: "VETLIFE", w: "", v: ["Hypo pesce idrolizzato", "Dermatosis salmone", "Obesity al pollo"]}
-        ];
+        // Inizializza
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
 
-        // "Appiattiamo" i dati
-        const products = [];
-        rawData.forEach(brandGroup => {
-            brandGroup.v.forEach(variant => {
-                products.push({
-                    type: brandGroup.t, // 'cat' o 'dog'
-                    brand: brandGroup.b,
-                    weight: brandGroup.w,
-                    name: variant,
-                    searchString: brandGroup.b.toLowerCase() + " " + 
-                                  variant.toLowerCase() + " " + 
-                                  brandGroup.w.toLowerCase()
-                });
+        // Stato
+        let products = [];
+        let currentTab = 'cat';
+        let searchTerm = '';
+        const listEl = document.getElementById('list');
+
+        // ASCOLTO DATABASE (REAL-TIME)
+        db.collection("products").onSnapshot(snapshot => {
+            products = [];
+            snapshot.forEach(doc => {
+                products.push({ id: doc.id, ...doc.data() });
             });
+            render();
+        }, err => {
+            listEl.innerHTML = `<div class="loading" style="color:red">Errore: ${err.message}</div>`;
         });
 
-        // --- STATO DELL'APP ---
-        let currentTab = 'cat'; // Default: gatto
-        let currentSearch = '';
+        // RENDER DELLA LISTA
+        function render() {
+            listEl.innerHTML = '';
+            const terms = searchTerm.split(" ").filter(t => t);
 
-        const searchInput = document.getElementById('search-input');
-        const resultsContainer = document.getElementById('results-container');
-        const btnCat = document.getElementById('btn-cat');
-        const btnDog = document.getElementById('btn-dog');
+            // Filtra e Ordina
+            const filtered = products
+                .filter(p => {
+                    if (p.type !== currentTab) return false;
+                    const fullText = (p.brand + " " + p.name + " " + (p.weight || "")).toLowerCase();
+                    if (terms.length === 0) return true;
+                    return terms.every(t => fullText.includes(t));
+                })
+                .sort((a, b) => a.brand.localeCompare(b.brand) || a.name.localeCompare(b.name));
 
-        // Funzione per cambiare Tab
-        function setTab(tab) {
-            currentTab = tab;
-            
-            // Aggiorna stile bottoni
-            if (tab === 'cat') {
-                btnCat.classList.add('active');
-                btnDog.classList.remove('active');
-            } else {
-                btnCat.classList.remove('active');
-                btnDog.classList.add('active');
-            }
-
-            // Rilancia la ricerca/filtro
-            filterAndDisplay();
-        }
-
-        // Funzione principale di filtro e visualizzazione
-        function filterAndDisplay() {
-            const terms = currentSearch.split(/\s+/).filter(w => w.length > 0);
-
-            const filtered = products.filter(p => {
-                // 1. Filtra per Tab (Gatto o Cane)
-                if (p.type !== currentTab) return false;
-
-                // 2. Filtra per Ricerca (se c'è testo)
-                if (terms.length === 0) return true;
-                return terms.every(t => p.searchString.includes(t));
-            });
-
-            displayProducts(filtered);
-        }
-
-        function displayProducts(list) {
-            resultsContainer.innerHTML = '';
-            
-            if (list.length === 0) {
-                resultsContainer.innerHTML = '<div class="no-results">Nessun prodotto trovato in questa categoria.</div>';
+            if (filtered.length === 0) {
+                listEl.innerHTML = '<div class="loading">Nessun prodotto trovato.</div>';
                 return;
             }
 
-            list.forEach(p => {
+            filtered.forEach(p => {
                 const li = document.createElement('li');
-                li.className = 'product-item';
+                li.className = 'card';
                 
-                // Non serve più il badge Gatto/Cane perché siamo già nel tab specifico
-                const weightHtml = p.weight ? `<div class="pack-info">⚖️ ${p.weight}</div>` : '';
+                // Immagine dinamica se manca
+                const img = p.img || `https://placehold.co/600x400/e3f2fd/444?text=${encodeURIComponent(p.brand)}&font=roboto`;
+                const desc = p.desc || "Nessuna descrizione.";
 
                 li.innerHTML = `
-                    <div class="header-row">
-                        <span class="brand-name">${p.brand}</span>
+                    <div class="card-header" onclick="toggle(this)">
+                        <div class="brand">${p.brand}</div>
+                        <div class="name">${p.name}</div>
+                        ${p.weight ? `<div class="weight">⚖️ ${p.weight}</div>` : ''}
                     </div>
-                    <div class="variant-name">${p.name}</div>
-                    ${weightHtml}
+                    <div class="details">
+                        <div class="content">
+                            <img src="${img}" class="prod-img" loading="lazy">
+                            <div class="desc">${desc}</div>
+                            <div class="actions">
+                                <button class="btn btn-edit" onclick="edit('${p.id}')">✏️ Modifica</button>
+                                <button class="btn btn-del" onclick="del('${p.id}', '${p.name}')">🗑️ Elimina</button>
+                            </div>
+                        </div>
+                    </div>
                 `;
-                resultsContainer.appendChild(li);
+                listEl.appendChild(li);
             });
         }
 
-        // Event Listener per la ricerca
-        searchInput.addEventListener('input', (e) => {
-            currentSearch = e.target.value.toLowerCase().trim();
-            filterAndDisplay();
+        // INTERAZIONE UTENTE
+        function toggle(el) { el.parentElement.classList.toggle('expanded'); }
+        
+        function setTab(t) {
+            currentTab = t;
+            document.getElementById('tab-cat').className = t === 'cat' ? 'tab-btn active' : 'tab-btn';
+            document.getElementById('tab-dog').className = t === 'dog' ? 'tab-btn active' : 'tab-btn';
+            render();
+        }
+
+        document.getElementById('search').addEventListener('input', e => {
+            searchTerm = e.target.value.toLowerCase();
+            render();
         });
 
-        // Avvio iniziale
-        filterAndDisplay();
+        // GESTIONE MODALE (AGGIUNGI / MODIFICA)
+        const modal = document.getElementById('modal');
+        const ids = ['edit-id', 'inp-type', 'inp-brand', 'inp-name', 'inp-weight', 'inp-img', 'inp-desc'];
 
+        function openModal() {
+            // Reset per "Nuovo"
+            document.getElementById('modal-title').innerText = "Nuovo Prodotto";
+            ids.forEach(id => document.getElementById(id).value = '');
+            document.getElementById('inp-type').value = currentTab;
+            modal.classList.add('open');
+        }
+
+        function closeModal() { modal.classList.remove('open'); }
+
+        function edit(id) {
+            const p = products.find(x => x.id === id);
+            if(!p) return;
+            document.getElementById('modal-title').innerText = "Modifica Prodotto";
+            document.getElementById('edit-id').value = id;
+            document.getElementById('inp-type').value = p.type;
+            document.getElementById('inp-brand').value = p.brand;
+            document.getElementById('inp-name').value = p.name;
+            document.getElementById('inp-weight').value = p.weight || '';
+            document.getElementById('inp-img').value = p.img || '';
+            document.getElementById('inp-desc').value = p.desc || '';
+            modal.classList.add('open');
+        }
+
+        function saveData() {
+            const id = document.getElementById('edit-id').value;
+            const data = {
+                type: document.getElementById('inp-type').value,
+                brand: document.getElementById('inp-brand').value,
+                name: document.getElementById('inp-name').value,
+                weight: document.getElementById('inp-weight').value,
+                img: document.getElementById('inp-img').value,
+                desc: document.getElementById('inp-desc').value
+            };
+
+            if(!data.brand || !data.name) return alert("Marca e Nome obbligatori!");
+
+            const ref = db.collection('products');
+            const promise = id ? ref.doc(id).update(data) : ref.add(data);
+
+            promise.then(() => closeModal())
+                   .catch(e => alert("Errore: " + e.message));
+        }
+
+        function del(id, name) {
+            if(confirm(`Eliminare ${name}?`)) {
+                db.collection('products').doc(id).delete();
+            }
+        }
     </script>
 </body>
 </html>
