@@ -155,19 +155,48 @@
         let searchTerm = '';
         const listEl = document.getElementById('list');
 
-        // --- CARICAMENTO DATI ---
+        // --- CARICAMENTO DATI (VERSIONE DEBUG) ---
         async function fetchProducts() {
-            const { data, error } = await supabase
-                .from('products')
-                .select('*')
-                .order('brand', { ascending: true });
+            listEl.innerHTML = '<div class="loading">Sto contattando Supabase...</div>';
             
-            if (error) {
-                listEl.innerHTML = `<div class="loading" style="color:red">Errore: ${error.message}</div>`;
-                return;
+            try {
+                // Prova a chiedere i dati
+                const { data, error } = await supabase
+                    .from('products')
+                    .select('*')
+                    .order('brand', { ascending: true });
+                
+                // Se Supabase risponde con un errore, mostralo a video
+                if (error) {
+                    console.error("Errore Supabase:", error); // Per chi sa usare la console
+                    listEl.innerHTML = `
+                        <div class="loading" style="color:red; text-align:left; padding:20px;">
+                            <strong>ERRORE:</strong><br>
+                            ${error.message}<br><br>
+                            <em>Suggerimento: Controlla di aver eseguito l'SQL o che l'URL sia giusto.</em>
+                        </div>`;
+                    return;
+                }
+
+                // Se i dati sono vuoti
+                if (!data || data.length === 0) {
+                     listEl.innerHTML = '<div class="loading">Database collegato, ma vuoto!<br>Premi + per aggiungere un prodotto.</div>';
+                     products = [];
+                     return;
+                }
+
+                // Tutto ok!
+                products = data;
+                render();
+
+            } catch (err) {
+                // Errore generico di connessione (es. URL sbagliato)
+                listEl.innerHTML = `
+                    <div class="loading" style="color:red">
+                        <strong>ERRORE CONNESSIONE:</strong><br>
+                        ${err.message}
+                    </div>`;
             }
-            products = data;
-            render();
         }
 
         // --- RENDER ---
