@@ -576,13 +576,45 @@
             setTimeout(() => btn.innerText = "Salva Note", 2000);
         }
 
-        async function editBrand(oldBrand, event) {
-            event.stopPropagation();
-            const newBrand = prompt("Rinomina marca:", oldBrand);
-            if (newBrand && newBrand !== oldBrand) {
-                await sb.from('products').update({ brand: newBrand }).eq('brand', oldBrand);
-                await fetchAllProducts();
-                render();
+       async function editBrand(oldBrand, event) {
+            event.stopPropagation(); // Evita che il click apra la marca mentre provi a modificarla
+            
+            const newBrandInput = prompt("Rinomina marca:", oldBrand);
+            
+            // Se l'utente preme Annulla o lascia vuoto, ci fermiamo
+            if (!newBrandInput || newBrandInput.trim() === "") return;
+            
+            const newBrand = newBrandInput.trim(); // Rimuove spazi extra
+            
+            if (newBrand === oldBrand) return; // Nessun cambiamento
+
+            // 1. Controlla se la nuova marca esiste già nel listino attuale
+            // (Usiamo l'array 'products' che abbiamo già in memoria per fare prima)
+            const brandExists = products.some(p => p.brand.toLowerCase() === newBrand.toLowerCase());
+
+            if (brandExists) {
+                // SCENARIO MERGE (UNIONE)
+                const confirmMerge = confirm(
+                    `⚠️ ATTENZIONE: La marca "${newBrand}" è già presente nel magazzino.\n\n` +
+                    `Se procedi, tutti i prodotti di "${oldBrand}" verranno SPOSTATI sotto "${newBrand}" e la vecchia marca sparirà.\n\n` +
+                    `Vuoi confermare l'unione?`
+                );
+                
+                if (!confirmMerge) return; // L'utente ha annullato
+            }
+
+            // 2. Procedi con l'aggiornamento nel Database
+            // Questo comando funziona sia per rinominare che per unire
+            const { error } = await sb
+                .from('products')
+                .update({ brand: newBrand })
+                .eq('brand', oldBrand);
+
+            if (error) {
+                alert("Errore durante la modifica: " + error.message);
+            } else {
+                await fetchAllProducts(); // Ricarica i dati per vedere le modifiche
+                render(); // Ridisegna la schermata
             }
         }
 
