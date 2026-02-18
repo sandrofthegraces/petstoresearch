@@ -12,33 +12,23 @@
         /* --- STILE ORIGINALE "LISTINO PET FOOD" (iOS Style) --- */
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f2f2f7; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; color: #000; }
         
-        /* HEADER (Titolo Centrato Perfettamente) */
+        /* HEADER */
         .header { 
             position: sticky; top: 0; background: rgba(242, 242, 247, 0.95); 
             padding: 10px 15px; z-index: 100; border-bottom: 1px solid #c6c6c8; 
             backdrop-filter: blur(10px); 
             display: flex; align-items: center; justify-content: space-between; 
-            height: 44px; /* Altezza standard iOS */
+            height: 44px; 
         }
         
         .header-left { flex: 1; display: flex; justify-content: flex-start; z-index: 10; }
         .header-right { flex: 1; display: flex; justify-content: flex-end; z-index: 10; }
 
         .title { 
-            position: absolute; 
-            left: 50%; 
-            transform: translateX(-50%); 
-            font-family: inherit; 
-            font-size: 17px; /* Dimensione standard iOS */
-            font-weight: 700; 
-            color: #000; 
-            margin: 0; 
-            text-align: center;
-            width: 50%;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            z-index: 1;
+            position: absolute; left: 50%; transform: translateX(-50%); 
+            font-family: inherit; font-size: 17px; font-weight: 700; 
+            color: #000; margin: 0; text-align: center; width: 50%;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 1;
         }
         
         .btn-back { border: none; background: transparent; color: #007aff; font-size: 17px; display: flex; align-items: center; gap: 2px; cursor: pointer; padding: 0; font-weight: 500; font-family: inherit; }
@@ -53,13 +43,12 @@
         /* CONTENITORE */
         #app-container { padding: 15px; padding-bottom: 100px; }
 
-        /* CARD PRODOTTO (Stile Originale Ripristinato) */
+        /* CARD PRODOTTO */
         .card { background: #fff; margin-bottom: 12px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden; position: relative; transition: all 0.2s ease; }
         
         .card-header { padding: 15px; cursor: pointer; position: relative; -webkit-tap-highlight-color: rgba(0,0,0,0.05); }
-        .card-header * { pointer-events: none; } /* Fix click iOS */
+        .card-header * { pointer-events: none; }
 
-        /* Freccia laterale */
         .card-header::after { content: '›'; position: absolute; right: 15px; top: 50%; transform: translateY(-50%) rotate(90deg); font-size: 22px; color: #c7c7cc; transition: 0.3s; }
         .card.expanded .card-header::after { transform: translateY(-50%) rotate(-90deg); color: #007aff; }
 
@@ -77,25 +66,21 @@
         .prod-name { font-size: 17px; font-weight: 700; color: #000; line-height: 1.3; padding-right: 20px; margin-top: 2px; }
         .prod-weight { font-size: 14px; color: #888; margin-top: 4px; font-weight: 500; }
 
-        /* STOCK */
         .stock-row { margin-top: 8px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
         .stock-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
         .stock-ok { color: #34c759; } .dot-ok { background: #34c759; }
         .stock-ko { color: #ff3b30; } .dot-ko { background: #ff3b30; }
 
-        /* ACCORDION */
         .details { max-height: 0; overflow: hidden; transition: max-height 0.35s ease-out; background: #fafafa; border-top: 1px solid #eee; }
         .card.expanded .details { max-height: 2500px; transition: max-height 0.5s ease-in; }
         
         .content { padding: 15px; display: flex; flex-direction: column; gap: 15px; }
 
-        /* IMMAGINI & DESCRIZIONE */
         .img-container { text-align: center; background: white; padding: 10px; border-radius: 8px; border: 1px solid #eee; }
         .img-label { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; display: block; font-weight: 600; }
         .prod-img { max-width: 100%; max-height: 300px; width: auto; height: auto; object-fit: contain; display: block; margin: 0 auto; }
         .desc { font-size: 15px; line-height: 1.5; color: #444; white-space: pre-wrap; background: white; padding: 12px; border-radius: 8px; border: 1px solid #eee; }
 
-        /* BOTTONI AZIONE */
         .actions { display: flex; gap: 10px; margin-top: 5px; }
         .btn { flex: 1; padding: 12px; border-radius: 8px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; color: white; transition: 0.2s; font-family: inherit; }
         .btn:active { transform: scale(0.98); opacity: 0.9; }
@@ -108,14 +93,39 @@
         .menu-btn:active { background: #e5e5ea; }
         .menu-arrow { color: #c7c7cc; font-size: 20px; }
 
-        /* GRIGLIA MARCHE */
-        .brand-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .brand-card { background: white; border-radius: 12px; padding: 20px 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); cursor: pointer; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80px; }
+        /* --- GRIGLIA MARCHE MIGLIORATA (SPAZIATA) --- */
+        .brand-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .brand-card { 
+            background: white; border-radius: 14px; padding: 15px 10px; 
+            text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.06); 
+            cursor: pointer; position: relative; 
+            display: flex; flex-direction: column; 
+            justify-content: space-between; /* Spinge nome su e tasti giù */
+            min-height: 120px; /* Più alta per evitare errori */
+        }
         .brand-card:active { background: #f2f2f7; }
-        .brand-name { font-weight: 700; font-size: 16px; margin-bottom: 8px; color: #000; }
-        .brand-tools { display: flex; gap: 15px; opacity: 0.4; }
-        .brand-tool-btn { border: none; background: transparent; padding: 5px; cursor: pointer; }
-        .brand-tool-btn:hover { opacity: 1; transform: scale(1.2); }
+        
+        .brand-name { 
+            font-weight: 800; font-size: 17px; 
+            color: #333; margin-top: 10px;
+            word-break: break-word; 
+        }
+        
+        .brand-tools { 
+            display: flex; justify-content: center; gap: 20px; /* Più spazio orizzontale */
+            margin-top: 15px; padding-top: 10px;
+            /* border-top: 1px solid #f0f0f0; Opzionale: linea separatrice */
+        }
+        
+        .brand-tool-btn { 
+            border: none; background: #f0f0f5; /* Sfondo leggero per mirare meglio */
+            padding: 8px; border-radius: 50%;
+            cursor: pointer; color: #666;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.2s;
+        }
+        .brand-tool-btn:hover { background: #e0e0e5; transform: scale(1.1); }
+        .brand-tool-btn.danger { color: #ff3b30; background: #fff0f0; }
 
         /* NOTE */
         .notes-area { width: 100%; height: 60vh; padding: 15px; font-size: 16px; border: 1px solid #c6c6c8; border-radius: 12px; resize: none; font-family: inherit; box-sizing: border-box; background: white; margin-bottom: 15px; }
@@ -219,7 +229,7 @@
                 </div>
                 <div class="field" style="flex:1">
                     <label class="label">Quantità</label>
-                    <input type="number" id="inp-qty" class="input" placeholder="0">
+                    <input type="number" id="inp-qty" class="input" placeholder="0" min="0" step="1">
                 </div>
             </div>
             
@@ -434,8 +444,8 @@
                 btn.innerHTML = `
                     <div class="brand-name">${brand}</div>
                     <div class="brand-tools">
-                        <button class="brand-tool-btn" onclick="editBrand('${brand}', event)"><i data-lucide="edit-2" size="16"></i></button>
-                        <button class="brand-tool-btn" onclick="deleteBrand('${brand}', event)" style="color:red"><i data-lucide="trash-2" size="16"></i></button>
+                        <button class="brand-tool-btn" onclick="editBrand('${brand}', event)" title="Modifica"><i data-lucide="edit-2" size="18"></i></button>
+                        <button class="brand-tool-btn danger" onclick="deleteBrand('${brand}', event)" title="Elimina"><i data-lucide="trash-2" size="18"></i></button>
                     </div>
                 `;
                 btn.onclick = (e) => {
@@ -576,46 +586,25 @@
             setTimeout(() => btn.innerText = "Salva Note", 2000);
         }
 
-       async function editBrand(oldBrand, event) {
-            event.stopPropagation(); // Evita che il click apra la marca mentre provi a modificarla
+        async function editBrand(oldBrand, event) {
+            event.stopPropagation();
             
             const newBrandInput = prompt("Rinomina marca:", oldBrand);
-            
-            // Se l'utente preme Annulla o lascia vuoto, ci fermiamo
             if (!newBrandInput || newBrandInput.trim() === "") return;
-            
-            const newBrand = newBrandInput.trim(); // Rimuove spazi extra
-            
-            if (newBrand === oldBrand) return; // Nessun cambiamento
+            const newBrand = newBrandInput.trim();
+            if (newBrand === oldBrand) return;
 
-            // 1. Controlla se la nuova marca esiste già nel listino attuale
-            // (Usiamo l'array 'products' che abbiamo già in memoria per fare prima)
+            // Logica Merge (Unione)
             const brandExists = products.some(p => p.brand.toLowerCase() === newBrand.toLowerCase());
-
+            
             if (brandExists) {
-                // SCENARIO MERGE (UNIONE)
-                const confirmMerge = confirm(
-                    `⚠️ ATTENZIONE: La marca "${newBrand}" è già presente nel magazzino.\n\n` +
-                    `Se procedi, tutti i prodotti di "${oldBrand}" verranno SPOSTATI sotto "${newBrand}" e la vecchia marca sparirà.\n\n` +
-                    `Vuoi confermare l'unione?`
-                );
-                
-                if (!confirmMerge) return; // L'utente ha annullato
+                const confirmMerge = confirm(`⚠️ La marca "${newBrand}" esiste già.\nVuoi unire i prodotti di "${oldBrand}" dentro "${newBrand}"?`);
+                if (!confirmMerge) return;
             }
 
-            // 2. Procedi con l'aggiornamento nel Database
-            // Questo comando funziona sia per rinominare che per unire
-            const { error } = await sb
-                .from('products')
-                .update({ brand: newBrand })
-                .eq('brand', oldBrand);
-
-            if (error) {
-                alert("Errore durante la modifica: " + error.message);
-            } else {
-                await fetchAllProducts(); // Ricarica i dati per vedere le modifiche
-                render(); // Ridisegna la schermata
-            }
+            await sb.from('products').update({ brand: newBrand }).eq('brand', oldBrand);
+            await fetchAllProducts();
+            render();
         }
 
         async function deleteBrand(brand, event) {
