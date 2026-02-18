@@ -429,4 +429,53 @@
             
             document.getElementById('inp-type').value = p.type;
             document.getElementById('inp-consistency').value = p.consistency;
-            document.getElementById('inp-brand').value
+            document.getElementById('inp-brand').value = p.brand;
+            document.getElementById('inp-line').value = p.line || '';
+            document.getElementById('inp-full-name').value = p.full_name;
+            document.getElementById('inp-weight').value = p.weight;
+            document.getElementById('inp-qty').value = p.quantity;
+            document.getElementById('inp-desc').value = p.description;
+            
+            document.getElementById('modal-product').classList.add('open');
+        }
+
+        async function saveProduct() {
+            const id = document.getElementById('edit-id').value;
+            const payload = {
+                type: document.getElementById('inp-type').value,
+                consistency: document.getElementById('inp-consistency').value,
+                brand: document.getElementById('inp-brand').value,
+                line: document.getElementById('inp-line').value,
+                full_name: document.getElementById('inp-full-name').value,
+                weight: document.getElementById('inp-weight').value,
+                quantity: parseInt(document.getElementById('inp-qty').value) || 0,
+                description: document.getElementById('inp-desc').value
+            };
+
+            if (!payload.brand || !payload.full_name) {
+                alert("Marca e Nome sono obbligatori");
+                return;
+            }
+
+            if (id) {
+                await sb.from('products').update(payload).eq('id', id);
+            } else {
+                await sb.from('products').insert([payload]);
+            }
+
+            closeProductModal();
+            await fetchAllProducts();
+            render(); // Ricarica la vista corrente
+        }
+
+        async function deleteProduct(id) {
+            if (confirm("Eliminare prodotto?")) {
+                await sb.from('products').delete().eq('id', id);
+                await fetchAllProducts();
+                render();
+            }
+        }
+
+    </script>
+</body>
+</html>
