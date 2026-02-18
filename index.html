@@ -27,11 +27,17 @@
         .card-header::after { content: '›'; position: absolute; right: 15px; top: 50%; transform: translateY(-50%) rotate(90deg); font-size: 22px; color: #c7c7cc; transition: 0.3s; }
         .card.expanded .card-header::after { transform: translateY(-50%) rotate(-90deg); color: #007aff; }
 
-        .tags-row { display: flex; gap: 8px; margin-bottom: 4px; align-items: center; }
-        .tag { font-size: 11px; text-transform: uppercase; font-weight: 800; border-radius: 4px; padding: 2px 4px; }
+        .tags-row { display: flex; gap: 6px; margin-bottom: 6px; align-items: center; flex-wrap: wrap; }
+        .tag { font-size: 10px; text-transform: uppercase; font-weight: 800; border-radius: 4px; padding: 3px 6px; letter-spacing: 0.5px; }
+        
+        /* COLORI TAG */
         .tag-brand { color: #007aff; background: #e3f2fd; }
         .tag-cat { color: #ff9500; background: #fff3e0; }
         .tag-dog { color: #34c759; background: #e8f5e9; }
+        
+        /* Nuovi Tag Consistenza */
+        .tag-dry { color: #8d6e63; background: #efebe9; border: 1px solid #d7ccc8; } /* Marrone */
+        .tag-wet { color: #0288d1; background: #e1f5fe; border: 1px solid #b3e5fc; } /* Azzurro */
 
         .full-name { font-size: 17px; font-weight: 700; color: #000; padding-right: 20px; line-height: 1.3; }
         .weight { font-size: 14px; color: #888; margin-top: 6px; font-weight: 500; }
@@ -94,11 +100,8 @@
 
     <div class="modal-bg" id="modal-search">
         <div class="modal">
-            <h2 style="margin-top:0; margin-bottom:20px;">🔍 Cerca nel Magazzino</h2>
-            <div class="field">
-                <label class="label">Marca</label>
-                <input type="text" id="s-brand" class="input" placeholder="Es. Exclusion, Monge...">
-            </div>
+            <h2 style="margin-top:0; margin-bottom:20px;">🔍 Cerca nel Listino</h2>
+            
             <div class="field">
                 <label class="label">Animale</label>
                 <select id="s-type">
@@ -107,10 +110,26 @@
                     <option value="cat">Solo Gatto</option>
                 </select>
             </div>
+
+            <div class="field">
+                <label class="label">Consistenza</label>
+                <select id="s-consistency">
+                    <option value="">Tutti (Secco + Umido)</option>
+                    <option value="Secco">🍪 Secco</option>
+                    <option value="Umido">💧 Umido</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label class="label">Marca</label>
+                <input type="text" id="s-brand" class="input" placeholder="Es. Exclusion, Monge...">
+            </div>
+            
             <div class="field">
                 <label class="label">Contiene nel nome</label>
                 <input type="text" id="s-text" class="input" placeholder="Es. Renal, Puppy...">
             </div>
+
             <div class="modal-btns">
                 <button class="btn btn-cancel" onclick="closeSearchModal()">Chiudi</button>
                 <button class="btn btn-save" onclick="applySearch()">Cerca Ora</button>
@@ -123,22 +142,37 @@
         <div class="modal">
             <h2 id="modal-title" style="margin-top:0; margin-bottom:20px;">Nuovo Prodotto</h2>
             <input type="hidden" id="edit-id">
-            <div class="field">
-                <label class="label">Animale</label>
-                <select id="inp-type"><option value="dog">Cane</option><option value="cat">Gatto</option></select>
+            
+            <div style="display:flex; gap:10px;">
+                <div class="field" style="flex:1">
+                    <label class="label">Animale</label>
+                    <select id="inp-type"><option value="dog">Cane</option><option value="cat">Gatto</option></select>
+                </div>
+                <div class="field" style="flex:1">
+                    <label class="label">Consistenza</label>
+                    <select id="inp-consistency">
+                        <option value="">-- Scegli --</option>
+                        <option value="Secco">Secco</option>
+                        <option value="Umido">Umido</option>
+                    </select>
+                </div>
             </div>
+            
             <div class="field">
                 <label class="label">Marca</label>
                 <input type="text" id="inp-brand" class="input" placeholder="Es. Monge">
             </div>
+
             <div class="field">
                 <label class="label">Nome Completo</label>
                 <input type="text" id="inp-full-name" class="input" placeholder="Es. Monge Renal">
             </div>
+
             <div class="field">
                 <label class="label">Formati / Peso</label>
                 <input type="text" id="inp-weight" class="input" placeholder="Es. 1.5kg">
             </div>
+            
             <div style="display:flex; gap:10px;">
                 <div class="field" style="flex:1">
                     <label class="label">Foto</label>
@@ -157,10 +191,12 @@
                     <input type="hidden" id="url-ration">
                 </div>
             </div>
+
             <div class="field">
                 <label class="label">Descrizione</label>
                 <textarea id="inp-desc" placeholder="Inserisci note..."></textarea>
             </div>
+            
             <div class="modal-btns">
                 <button class="btn btn-cancel" onclick="closeProductModal()">Annulla</button>
                 <button class="btn btn-save" onclick="saveData()">Salva</button>
@@ -180,14 +216,13 @@
         let products = [];
         let sb; 
         
-        // Default: Mostra TUTTO all'apertura
-        let activeFilters = { brand: "", type: "all", text: "" };
+        // Filtri attivi (Default: tutto)
+        let activeFilters = { brand: "", type: "all", consistency: "", text: "" };
 
         // AVVIO
         document.addEventListener("DOMContentLoaded", () => {
             const listEl = document.getElementById('list');
             
-            // CONTROLLO SICUREZZA
             if (!SUPABASE_URL || SUPABASE_URL.includes("INCOLLA")) {
                 listEl.innerHTML = `<div class="error-box">⛔ FERMO!<br>Hai dimenticato di incollare URL e KEY nel codice.<br>Scorri in basso fino alla sezione SCRIPT e incollali tra le virgolette.</div>`;
                 return;
@@ -220,8 +255,16 @@
             listEl.innerHTML = '';
 
             const filtered = products.filter(p => {
+                // Filtro Animale
                 if (activeFilters.type !== 'all' && p.type !== activeFilters.type) return false;
+                
+                // Filtro Consistenza (Nuovo!)
+                if (activeFilters.consistency && p.consistency !== activeFilters.consistency) return false;
+
+                // Filtro Marca
                 if (activeFilters.brand && !(p.brand || "").toLowerCase().includes(activeFilters.brand.toLowerCase())) return false;
+                
+                // Filtro Testo
                 if (activeFilters.text) {
                     const searchStr = (p.full_name + " " + (p.brand || "")).toLowerCase();
                     if (!searchStr.includes(activeFilters.text.toLowerCase())) return false;
@@ -231,7 +274,9 @@
             
             // Aggiorna tasto Cerca
             const btnSearch = document.getElementById('btn-search-trigger');
-            if(activeFilters.brand || activeFilters.text || activeFilters.type !== 'all') {
+            const hasFilters = activeFilters.brand || activeFilters.text || activeFilters.type !== 'all' || activeFilters.consistency;
+            
+            if(hasFilters) {
                 btnSearch.classList.add('active');
                 btnSearch.innerHTML = `🔍 Cerca (${filtered.length})`;
             } else {
@@ -253,10 +298,15 @@
                 
                 const typeHtml = p.type === 'cat' ? `<span class="tag tag-cat">🐱 Gatto</span>` : `<span class="tag tag-dog">🐶 Cane</span>`;
                 const brandHtml = p.brand ? `<span class="tag tag-brand">${p.brand}</span>` : '';
+                
+                // Tag Consistenza (se presente)
+                let consHtml = '';
+                if (p.consistency === 'Secco') consHtml = `<span class="tag tag-dry">🍪 Secco</span>`;
+                if (p.consistency === 'Umido') consHtml = `<span class="tag tag-wet">💧 Umido</span>`;
 
                 li.innerHTML = `
                     <div class="card-header" onclick="toggle(this)">
-                        <div class="tags-row">${typeHtml} ${brandHtml}</div>
+                        <div class="tags-row">${typeHtml} ${brandHtml} ${consHtml}</div>
                         <div class="full-name">${p.full_name}</div>
                         ${p.weight ? `<div class="weight">⚖️ ${p.weight}</div>` : ''}
                     </div>
@@ -284,6 +334,7 @@
             document.getElementById('s-brand').value = activeFilters.brand;
             document.getElementById('s-text').value = activeFilters.text;
             document.getElementById('s-type').value = activeFilters.type;
+            document.getElementById('s-consistency').value = activeFilters.consistency;
             modalSearch.classList.add('open');
         }
         function closeSearchModal() { modalSearch.classList.remove('open'); }
@@ -291,11 +342,12 @@
             activeFilters.brand = document.getElementById('s-brand').value.trim();
             activeFilters.text = document.getElementById('s-text').value.trim();
             activeFilters.type = document.getElementById('s-type').value;
+            activeFilters.consistency = document.getElementById('s-consistency').value;
             render();
             closeSearchModal();
         }
         function resetSearch() {
-            activeFilters = { brand: "", text: "", type: "all" }; 
+            activeFilters = { brand: "", text: "", type: "all", consistency: "" }; 
             render();
             closeSearchModal();
         }
@@ -306,6 +358,7 @@
             document.getElementById('modal-title').innerText = "Nuovo Prodotto";
             document.getElementById('edit-id').value = '';
             document.getElementById('inp-type').value = 'dog'; 
+            document.getElementById('inp-consistency').value = '';
             ['inp-brand', 'inp-full-name', 'inp-weight', 'inp-desc', 'file-img', 'file-ration', 'url-img', 'url-ration'].forEach(id => {
                if(document.getElementById(id)) document.getElementById(id).value = '';
             });
@@ -332,6 +385,7 @@
             document.getElementById('modal-title').innerText = "Modifica Prodotto";
             document.getElementById('edit-id').value = id;
             document.getElementById('inp-type').value = p.type;
+            document.getElementById('inp-consistency').value = p.consistency || '';
             document.getElementById('inp-brand').value = p.brand || '';
             document.getElementById('inp-full-name').value = p.full_name;
             document.getElementById('inp-weight').value = p.weight || '';
@@ -359,8 +413,10 @@
                 let rationUrl = document.getElementById('url-ration').value;
                 if (fileImg) { btn.innerText = "Carico Foto..."; imgUrl = await uploadImage(fileImg); }
                 if (fileRation) { btn.innerText = "Carico Tabella..."; rationUrl = await uploadImage(fileRation); }
+                
                 const payload = {
                     type: document.getElementById('inp-type').value,
+                    consistency: document.getElementById('inp-consistency').value, // Salva consistenza
                     brand: document.getElementById('inp-brand').value,
                     full_name: document.getElementById('inp-full-name').value,
                     weight: document.getElementById('inp-weight').value,
@@ -369,6 +425,7 @@
                     ration_url: rationUrl
                 };
                 if(!payload.full_name) throw new Error("Nome mancante!");
+                
                 if (id) await sb.from('products').update(payload).eq('id', id);
                 else await sb.from('products').insert([payload]);
                 await fetchProducts();
