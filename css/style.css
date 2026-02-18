@@ -1,0 +1,92 @@
+/* css/style.css */
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f2f2f7; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; color: #000; }
+
+.header { position: sticky; top: 0; background: rgba(242, 242, 247, 0.95); padding: 10px 15px; z-index: 100; border-bottom: 1px solid #c6c6c8; backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: space-between; height: 44px; }
+.header-left { flex: 1; display: flex; justify-content: flex-start; z-index: 10; }
+.header-right { flex: 1; display: flex; justify-content: flex-end; z-index: 10; }
+
+.title { position: absolute; left: 50%; transform: translateX(-50%); font-family: inherit; font-size: 17px; font-weight: 700; color: #000; margin: 0; text-align: center; width: 50%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 1; }
+.btn-back { border: none; background: transparent; color: #007aff; font-size: 17px; display: flex; align-items: center; gap: 2px; cursor: pointer; padding: 0; font-weight: 500; font-family: inherit; }
+
+.btn-search-trigger { background: #e3e3e8; color: #007aff; border: none; padding: 6px 12px; border-radius: 14px; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 5px; font-family: inherit; }
+.btn-search-trigger.active { background: #007aff; color: white; }
+
+#app-container { padding: 15px; padding-bottom: 100px; }
+
+.card { background: #fff; margin-bottom: 12px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden; position: relative; transition: all 0.2s ease; }
+.card-header { padding: 15px; cursor: pointer; position: relative; -webkit-tap-highlight-color: rgba(0,0,0,0.05); }
+.card-header * { pointer-events: none; }
+.card-header::after { content: '›'; position: absolute; right: 15px; top: 50%; transform: translateY(-50%) rotate(90deg); font-size: 22px; color: #c7c7cc; transition: 0.3s; }
+.card.expanded .card-header::after { transform: translateY(-50%) rotate(-90deg); color: #007aff; }
+
+.tags-row { display: flex; gap: 5px; margin-bottom: 4px; align-items: center; flex-wrap: wrap; padding-right: 25px; }
+.tag { font-size: 10px; text-transform: uppercase; font-weight: 700; border-radius: 4px; padding: 2px 5px; letter-spacing: 0.5px; display: inline-block; }
+.tag-brand { color: #5856d6; background: #f2f2fd; } 
+.tag-line { color: #ff2d55; background: #fff0f2; }   
+.tag-wet { color: #007aff; background: #e3f2fd; }    
+.tag-dry { color: #8d6e63; background: #efebe9; }    
+.tag-cat { color: #ff9500; background: #fff3e0; }    
+.tag-dog { color: #34c759; background: #e8f5e9; }    
+
+.prod-name { font-size: 17px; font-weight: 700; color: #000; line-height: 1.3; padding-right: 20px; margin-top: 2px; }
+.prod-weight { font-size: 14px; color: #888; margin-top: 4px; font-weight: 500; }
+
+.stock-row { margin-top: 8px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.stock-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.stock-ok { color: #34c759; } .dot-ok { background: #34c759; }
+.stock-ko { color: #ff3b30; } .dot-ko { background: #ff3b30; }
+
+.details { max-height: 0; overflow: hidden; transition: max-height 0.35s ease-out; background: #fafafa; border-top: 1px solid #eee; }
+.card.expanded .details { max-height: 2500px; transition: max-height 0.5s ease-in; }
+.content { padding: 15px; display: flex; flex-direction: column; gap: 15px; }
+
+.img-container { text-align: center; background: white; padding: 10px; border-radius: 8px; border: 1px solid #eee; }
+.img-label { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; display: block; font-weight: 600; }
+.prod-img { max-width: 100%; max-height: 300px; width: auto; height: auto; object-fit: contain; display: block; margin: 0 auto; }
+.desc { font-size: 15px; line-height: 1.5; color: #444; white-space: pre-wrap; background: white; padding: 12px; border-radius: 8px; border: 1px solid #eee; }
+
+.actions { display: flex; gap: 10px; margin-top: 5px; }
+.btn { flex: 1; padding: 12px; border-radius: 8px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; color: white; transition: 0.2s; font-family: inherit; }
+.btn:active { transform: scale(0.98); opacity: 0.9; }
+.btn-edit { background: #ff9500; } 
+.btn-del { background: #ff3b30; }  
+.btn-shop { background: #007aff; }
+
+.menu-btn { background: white; padding: 20px; border-radius: 12px; margin-bottom: 10px; font-size: 18px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: none; width: 100%; text-align: left; color: #000; font-family: inherit; }
+.menu-btn:active { background: #e5e5ea; }
+.menu-arrow { color: #c7c7cc; font-size: 20px; }
+
+.brand-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.brand-card { background: white; border-radius: 14px; padding: 15px 10px; text-align: center; box-shadow: 0 2px 6px rgba(0,0,0,0.06); cursor: pointer; position: relative; display: flex; flex-direction: column; justify-content: space-between; min-height: 120px; }
+.brand-card:active { background: #f2f2f7; }
+.brand-name { font-weight: 800; font-size: 17px; color: #333; margin-top: 10px; word-break: break-word; }
+.brand-tools { display: flex; justify-content: center; gap: 20px; margin-top: 15px; padding-top: 10px; }
+.brand-tool-btn { border: none; background: #f0f0f5; padding: 8px; border-radius: 50%; cursor: pointer; color: #666; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+.brand-tool-btn:hover { background: #e0e0e5; transform: scale(1.1); }
+.brand-tool-btn.danger { color: #ff3b30; background: #fff0f0; }
+
+.notes-area { width: 100%; height: 60vh; padding: 15px; font-size: 16px; border: 1px solid #c6c6c8; border-radius: 12px; resize: none; font-family: inherit; box-sizing: border-box; background: white; margin-bottom: 15px; }
+.btn-save-note { background: #34c759; color: white; width: 100%; padding: 15px; border-radius: 12px; border: none; font-size: 18px; font-weight: bold; cursor: pointer; font-family: inherit; }
+
+.fab { position: fixed; bottom: 30px; right: 20px; width: 56px; height: 56px; background: #007aff; border-radius: 50%; color: white; border: none; font-size: 30px; box-shadow: 0 4px 12px rgba(0,122,255,0.4); cursor: pointer; z-index: 200; display: flex; align-items: center; justify-content: center; transition: transform 0.2s; }
+.fab:active { transform: scale(0.9); }
+
+.modal-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 500; display: none; align-items: flex-end; justify-content: center; backdrop-filter: blur(2px); }
+.modal-bg.open { display: flex; }
+.modal { background: #fff; width: 100%; max-width: 600px; border-radius: 20px 20px 0 0; padding: 25px; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); animation: slideUp 0.3s; max-height: 90vh; overflow-y: auto; font-family: inherit; }
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+.field { margin-bottom: 15px; }
+.label { display: block; font-size: 12px; color: #666; margin-bottom: 5px; font-weight: 700; text-transform: uppercase; }
+.input, select, textarea { width: 100%; padding: 12px; font-size: 16px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; background: #f9f9f9; -webkit-appearance: none; font-family: inherit; }
+.modal-btns { display: flex; gap: 10px; margin-top: 20px; }
+.file-input-wrapper { border: 2px dashed #ddd; padding: 15px; text-align: center; border-radius: 8px; background: #f9f9f9; cursor: pointer; }
+.file-input-wrapper.has-file { border-color: #34c759; background: #e8f5e9; }
+input[type="file"] { display: none; }
+.file-label { font-size: 14px; color: #007aff; pointer-events: none; }
+
+.loading { text-align: center; padding: 40px; color: #888; }
+.empty-state { text-align: center; padding: 40px; color: #888; font-style: italic; }
+.btn-reset { background: #ff3b30; color: white; margin-top: 10px; width: 100%; padding: 15px; border-radius: 8px; border: none; font-size: 16px; font-weight: bold; font-family: inherit; }
+.btn-cancel { background: #e5e5ea; color: black; flex: 1; padding: 15px; border-radius: 8px; border: none; font-weight: bold; font-family: inherit; }
+.hidden { display: none !important; }
