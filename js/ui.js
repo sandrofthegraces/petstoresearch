@@ -21,8 +21,8 @@ export function renderLevel1() {
 
 export function renderLevel2() {
     return `
-        <button class="menu-btn" onclick="setFilter('category', 'Secco')"><span>🍪 Secco</span> <span class="menu-arrow">›</span></button>
-        <button class="menu-btn" onclick="setFilter('category', 'Umido')"><span>💧 Umido</span> <span class="menu-arrow">›</span></button>
+        <button class="menu-btn" onclick="setFilter('category', 'Secco')"><span>🧆 Secco</span> <span class="menu-arrow">›</span></button>
+        <button class="menu-btn" onclick="setFilter('category', 'Umido')"><span>🥫 Umido</span> <span class="menu-arrow">›</span></button>
     `;
 }
 
@@ -78,7 +78,13 @@ export function renderProductList(filteredList) {
         const stockText = p.quantity > 0 ? `Disponibile (${p.quantity} pz)` : `Non disponibile`;
 
         const typeTag = p.type === 'cat' ? '<span class="tag tag-cat">🐱 Gatto</span>' : '<span class="tag tag-dog">🐶 Cane</span>';
-        const consTag = p.consistency === 'Secco' ? '<span class="tag tag-dry">🍪 Secco</span>' : (p.consistency === 'Umido' ? '<span class="tag tag-wet">💧 Umido</span>' : '');
+        
+        // --- MODIFICA EMOJI QUI SOTTO ---
+        const consTag = p.consistency === 'Secco' 
+            ? '<span class="tag tag-dry">🧆 Secco</span>' 
+            : (p.consistency === 'Umido' ? '<span class="tag tag-wet">🥫 Umido</span>' : '');
+        // --------------------------------
+
         const brandTag = p.brand ? `<span class="tag tag-brand">${p.brand}</span>` : '';
         const lineTag = p.line ? `<span class="tag tag-line">${p.line}</span>` : '';
         
