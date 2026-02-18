@@ -94,8 +94,8 @@
         <span class="title">📦 Magazzino</span>
         <input type="search" id="search" placeholder="Cerca prodotto..." autocomplete="off">
         <div class="tabs">
-            <button class="tab-btn active" onclick="setTab('cat')" id="tab-cat">🐱 Gatto</button>
-            <button class="tab-btn" onclick="setTab('dog')" id="tab-dog">🐶 Cane</button>
+            <button class="tab-btn active" onclick="setTab('dog')" id="tab-dog">🐶 Cane</button>
+            <button class="tab-btn" onclick="setTab('cat')" id="tab-cat">🐱 Gatto</button>
         </div>
     </div>
 
@@ -112,7 +112,7 @@
             
             <div class="field">
                 <label class="label">Categoria</label>
-                <select id="inp-type"><option value="cat">Gatto</option><option value="dog">Cane</option></select>
+                <select id="inp-type"><option value="dog">Cane</option><option value="cat">Gatto</option></select>
             </div>
             
             <div class="field">
@@ -169,7 +169,8 @@
         // -----------------------------------------------------------
 
         let products = [];
-        let currentTab = 'cat';
+        // DEFAULT ORA È DOG
+        let currentTab = 'dog';
         let searchTerm = '';
         const listEl = document.getElementById('list');
         let sb; 
@@ -188,7 +189,6 @@
             listEl.innerHTML = '<div class="loading">Connessione al database...</div>';
             
             try {
-                // Seleziona tutto e ordina per nome completo
                 const { data, error } = await sb
                     .from('products')
                     .select('*')
@@ -219,7 +219,6 @@
 
             const filtered = products.filter(p => {
                 if (p.type !== currentTab) return false;
-                // Cerca sia nel nome completo che nella marca
                 const searchStr = (p.full_name + " " + (p.brand || "") + " " + (p.weight || "")).toLowerCase();
                 if (terms.length === 0) return true;
                 return terms.every(t => searchStr.includes(t));
@@ -245,7 +244,6 @@
                         </div>`;
                 }
 
-                // Se la marca esiste nel database, la mostro piccolina sopra il nome
                 const brandHtml = p.brand ? `<span class="brand-tag">${p.brand}</span>` : '';
 
                 li.innerHTML = `
@@ -277,6 +275,7 @@
         
         function setTab(t) {
             currentTab = t;
+            // Aggiornato per riflettere l'inversione
             document.getElementById('tab-cat').className = t === 'cat' ? 'tab-btn active' : 'tab-btn';
             document.getElementById('tab-dog').className = t === 'dog' ? 'tab-btn active' : 'tab-btn';
             render();
@@ -329,7 +328,6 @@
             document.getElementById('edit-id').value = id;
             document.getElementById('inp-type').value = p.type;
             
-            // Popola i campi
             document.getElementById('inp-brand').value = p.brand || '';
             document.getElementById('inp-full-name').value = p.full_name;
             document.getElementById('inp-weight').value = p.weight || '';
@@ -376,7 +374,6 @@
 
                 const dataPayload = {
                     type: document.getElementById('inp-type').value,
-                    // Salva sia Marca che Nome Completo
                     brand: document.getElementById('inp-brand').value,
                     full_name: document.getElementById('inp-full-name').value,
                     weight: document.getElementById('inp-weight').value,
