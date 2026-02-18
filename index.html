@@ -9,107 +9,96 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
-        /* STILE iOS MODERNO */
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f2f2f7; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; color: #1c1c1e; }
+        /* --- STILE ORIGINALE "LISTINO PET FOOD" (iOS Style) --- */
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f2f2f7; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; color: #000; }
         
         /* HEADER */
-        .header { position: sticky; top: 0; background: rgba(242, 242, 247, 0.95); padding: 15px; z-index: 100; border-bottom: 1px solid #c6c6c8; backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: space-between; height: 50px; }
-        .title { font-size: 20px; font-weight: 800; color: #000; }
+        .header { position: sticky; top: 0; background: rgba(242, 242, 247, 0.95); padding: 10px 15px; z-index: 100; border-bottom: 1px solid #c6c6c8; backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: space-between; height: 50px; }
+        .title { font-size: 22px; font-weight: 800; display: block; color: #000; margin: 0; }
         
-        .header-left { display: flex; align-items: center; gap: 10px; flex: 1; }
-        .header-right { flex: 0 0 auto; }
+        .header-left { display: flex; align-items: center; gap: 5px; flex: 1; }
+        .btn-back { border: none; background: transparent; color: #007aff; font-size: 17px; display: flex; align-items: center; gap: 2px; cursor: pointer; padding: 0; font-weight: 500; }
 
-        .btn-back { border: none; background: transparent; color: #007aff; font-size: 17px; display: flex; align-items: center; gap: 5px; cursor: pointer; padding: 0; font-weight: 500; }
-        
         /* BOTTONE CERCA */
         .btn-search-trigger { 
-            background: #e3e3e8; color: #007aff; border: none; padding: 8px 15px; 
-            border-radius: 20px; font-weight: 600; font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 5px; 
+            background: #e3e3e8; color: #007aff; border: none; padding: 8px 12px; 
+            border-radius: 10px; font-weight: 600; font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 5px; 
         }
         .btn-search-trigger.active { background: #007aff; color: white; }
 
-        /* CONTENITORE PRINCIPALE */
-        #app-container { padding: 20px; padding-bottom: 100px; }
+        /* CONTENITORE */
+        #app-container { padding: 15px; padding-bottom: 100px; }
 
-        /* BOTTONI GRANDI DI NAVIGAZIONE */
-        .big-btn { display: flex; align-items: center; justify-content: center; width: 100%; padding: 25px; margin-bottom: 15px; border-radius: 16px; border: none; font-size: 22px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: transform 0.1s; }
-        .big-btn:active { transform: scale(0.98); }
-        .btn-shop { background: #007aff; color: white; }
-        .btn-order { background: #ff9500; color: white; }
-
-        /* LISTA DI NAVIGAZIONE (Marche) */
-        .nav-list { list-style: none; padding: 0; margin: 0; }
-        .nav-item { background: white; padding: 18px; margin-bottom: 10px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 18px; font-weight: 600; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .nav-item:active { background: #f2f2f2; }
-        .nav-arrow { color: #c7c7cc; }
-
-        /* AREA NOTE */
-        .notes-area { width: 100%; height: 60vh; padding: 15px; font-size: 16px; border: 1px solid #ddd; border-radius: 12px; resize: none; font-family: inherit; box-sizing: border-box; background: white; }
-        .btn-save-note { background: #34c759; color: white; width: 100%; padding: 15px; border-radius: 12px; border: none; font-size: 18px; font-weight: bold; margin-top: 15px; cursor: pointer; }
-
-        /* --- CARD PRODOTTO ESPANDIBILE --- */
-        .prod-card { background: white; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden; position: relative; transition: all 0.3s ease; }
+        /* CARD PRODOTTO (Stile Originale Ripristinato) */
+        .card { background: #fff; margin-bottom: 12px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden; position: relative; transition: all 0.2s ease; }
         
-        /* HEADER CARD (Sempre visibile) */
-        .prod-header { padding: 15px; cursor: pointer; position: relative; }
-        /* Freccia di espansione */
-        .prod-header::after { 
-            content: '›'; position: absolute; right: 15px; top: 50%; 
-            transform: translateY(-50%) rotate(90deg); 
-            font-size: 24px; color: #c7c7cc; transition: 0.3s; 
-        }
-        /* Rotazione freccia quando espanso */
-        .prod-card.expanded .prod-header::after { 
-            transform: translateY(-50%) rotate(-90deg); color: #007aff; 
-        }
+        .card-header { padding: 15px; cursor: pointer; position: relative; }
+        /* Freccia laterale originale */
+        .card-header::after { content: '›'; position: absolute; right: 15px; top: 50%; transform: translateY(-50%) rotate(90deg); font-size: 22px; color: #c7c7cc; transition: 0.3s; }
+        .card.expanded .card-header::after { transform: translateY(-50%) rotate(-90deg); color: #007aff; }
 
-        /* DETTAGLI NASCOSTI (Animazione a tendina) */
-        .prod-details { 
-            max-height: 0; overflow: hidden; transition: max-height 0.4s ease; 
-            background: #fafafa; border-top: 1px solid #eee; 
-        }
-        .prod-card.expanded .prod-details { max-height: 2000px; } /* Altezza sufficiente per il contenuto */
+        /* INFO CARD */
+        .tags-row { display: flex; gap: 5px; margin-bottom: 4px; align-items: center; flex-wrap: wrap; padding-right: 25px; }
+        .tag { font-size: 10px; text-transform: uppercase; font-weight: 700; border-radius: 4px; padding: 2px 5px; letter-spacing: 0.5px; display: inline-block; }
         
-        .prod-content { padding: 15px; display: flex; flex-direction: column; gap: 15px; }
+        .tag-brand { color: #5856d6; background: #f2f2fd; } /* Viola */
+        .tag-line { color: #ff2d55; background: #fff0f2; }   /* Rosso chiaro */
+        .tag-wet { color: #007aff; background: #e3f2fd; }    /* Blu */
+        .tag-dry { color: #8d6e63; background: #efebe9; }    /* Marrone */
+        .tag-cat { color: #ff9500; background: #fff3e0; }    /* Arancio */
+        .tag-dog { color: #34c759; background: #e8f5e9; }    /* Verde */
 
-        /* TAGS & INFO */
-        .tags-row { display: flex; gap: 6px; margin-bottom: 6px; align-items: center; flex-wrap: wrap; padding-right: 20px; }
-        .tag { font-size: 10px; text-transform: uppercase; font-weight: 800; border-radius: 4px; padding: 3px 6px; letter-spacing: 0.5px; }
+        .prod-name { font-size: 17px; font-weight: 700; color: #000; line-height: 1.3; padding-right: 20px; margin-top: 2px; }
+        .prod-weight { font-size: 14px; color: #888; margin-top: 4px; font-weight: 500; }
+
+        /* STOCK (Nuova funzione, stile integrato) */
+        .stock-row { margin-top: 8px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .stock-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        .stock-ok { color: #34c759; } .dot-ok { background: #34c759; }
+        .stock-ko { color: #ff3b30; } .dot-ko { background: #ff3b30; }
+
+        /* ACCORDION (Animazione Originale) */
+        .details { max-height: 0; overflow: hidden; transition: max-height 0.35s ease-out; background: #fafafa; border-top: 1px solid #eee; }
+        .card.expanded .details { max-height: 2500px; transition: max-height 0.5s ease-in; }
         
-        /* COLORI TAG & EMOJI */
-        .tag-brand { color: #5856d6; background: #f2f2fd; border: 1px solid #dcdcfc; }
-        .tag-line { color: #ff2d55; background: #fff0f2; border: 1px solid #ffccd5; }
-        .tag-wet { color: #007aff; background: #e3f2fd; border: 1px solid #bbdcfc; }
-        .tag-dry { color: #8d6e63; background: #efebe9; border: 1px solid #d7ccc8; } 
-        .tag-cat { color: #ff9500; background: #fff3e0; }
-        .tag-dog { color: #34c759; background: #e8f5e9; }
+        .content { padding: 15px; display: flex; flex-direction: column; gap: 15px; }
 
-        .prod-name { font-size: 17px; font-weight: 700; color: #000; line-height: 1.3; padding-right: 20px; }
-        .prod-weight { font-size: 14px; color: #888; margin-top: 4px; }
-        
-        .stock-indicator { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 700; padding: 4px 8px; border-radius: 6px; margin-top: 8px; }
-        .stock-ok { background: #e8f5e9; color: #34c759; }
-        .stock-ko { background: #ffebee; color: #ff3b30; }
-
-        /* ELEMENTI INTERNI (Immagini, Descrizione) */
+        /* IMMAGINI & DESCRIZIONE */
         .img-container { text-align: center; background: white; padding: 10px; border-radius: 8px; border: 1px solid #eee; }
         .img-label { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; display: block; font-weight: 600; }
-        .prod-img { max-width: 100%; max-height: 300px; width: auto; height: auto; object-fit: contain; display: block; margin: 0 auto; cursor: pointer; }
-        .desc { font-size: 15px; line-height: 1.5; color: #444; white-space: pre-wrap; background: white; padding: 15px; border-radius: 8px; border: 1px solid #eee; }
+        .prod-img { max-width: 100%; max-height: 300px; width: auto; height: auto; object-fit: contain; display: block; margin: 0 auto; }
+        .desc { font-size: 15px; line-height: 1.5; color: #444; white-space: pre-wrap; background: white; padding: 12px; border-radius: 8px; border: 1px solid #eee; }
 
-        /* AZIONI PRODOTTO */
-        .prod-actions { display: flex; gap: 10px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; }
-        .btn-action { flex: 1; padding: 12px; border-radius: 8px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; }
-        .btn-edit { background: #ff9500; color: white; }
-        .btn-del { background: #ff3b30; color: white; }
+        /* BOTTONI AZIONE (Stile Originale: Arancio e Rosso) */
+        .actions { display: flex; gap: 10px; margin-top: 5px; }
+        .btn { flex: 1; padding: 12px; border-radius: 8px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; color: white; transition: 0.2s; }
+        .btn:active { transform: scale(0.98); opacity: 0.9; }
+        .btn-edit { background: #ff9500; } /* Modifica Arancione */
+        .btn-del { background: #ff3b30; }  /* Elimina Rosso */
 
-        /* AZIONI MARCA */
-        .brand-actions { display: flex; gap: 10px; }
-        .btn-icon { background: none; border: none; padding: 5px; cursor: pointer; color: #888; }
+        /* BOTTONI NAVIGAZIONE MENU (Stile iOS List) */
+        .menu-btn { background: white; padding: 20px; border-radius: 12px; margin-bottom: 10px; font-size: 18px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: none; width: 100%; text-align: left; color: #000; }
+        .menu-btn:active { background: #e5e5ea; }
+        .menu-arrow { color: #c7c7cc; font-size: 20px; }
 
-        .fab { position: fixed; bottom: 30px; right: 20px; width: 60px; height: 60px; background: #007aff; border-radius: 50%; color: white; border: none; font-size: 35px; box-shadow: 0 4px 15px rgba(0,122,255,0.4); cursor: pointer; z-index: 200; display: flex; align-items: center; justify-content: center; }
+        /* GRIGLIA MARCHE */
+        .brand-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .brand-card { background: white; border-radius: 12px; padding: 20px 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); cursor: pointer; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80px; }
+        .brand-card:active { background: #f2f2f7; }
+        .brand-name { font-weight: 700; font-size: 16px; margin-bottom: 8px; }
+        .brand-tools { display: flex; gap: 15px; opacity: 0.4; }
+        .brand-tool-btn { border: none; background: transparent; padding: 5px; cursor: pointer; }
+        .brand-tool-btn:hover { opacity: 1; transform: scale(1.2); }
 
-        /* MODALE */
+        /* NOTE */
+        .notes-area { width: 100%; height: 60vh; padding: 15px; font-size: 16px; border: 1px solid #c6c6c8; border-radius: 12px; resize: none; font-family: inherit; box-sizing: border-box; background: white; margin-bottom: 15px; }
+        .btn-save-note { background: #34c759; color: white; width: 100%; padding: 15px; border-radius: 12px; border: none; font-size: 18px; font-weight: bold; cursor: pointer; }
+
+        /* FAB (+) */
+        .fab { position: fixed; bottom: 30px; right: 20px; width: 56px; height: 56px; background: #007aff; border-radius: 50%; color: white; border: none; font-size: 30px; box-shadow: 0 4px 12px rgba(0,122,255,0.4); cursor: pointer; z-index: 200; display: flex; align-items: center; justify-content: center; transition: transform 0.2s; }
+        .fab:active { transform: scale(0.9); }
+
+        /* MODALE & FORM (Stile Originale) */
         .modal-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 500; display: none; align-items: flex-end; justify-content: center; backdrop-filter: blur(2px); }
         .modal-bg.open { display: flex; }
         .modal { background: #fff; width: 100%; max-width: 600px; border-radius: 20px 20px 0 0; padding: 25px; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); animation: slideUp 0.3s; max-height: 90vh; overflow-y: auto; }
@@ -118,46 +107,30 @@
         .field { margin-bottom: 15px; }
         .label { display: block; font-size: 12px; color: #666; margin-bottom: 5px; font-weight: 700; text-transform: uppercase; }
         .input, select, textarea { width: 100%; padding: 12px; font-size: 16px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; background: #f9f9f9; -webkit-appearance: none; }
+        .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
         
-        .file-input-wrapper { border: 2px dashed #ddd; padding: 20px; text-align: center; border-radius: 8px; background: #f9f9f9; cursor: pointer; }
+        .file-input-wrapper { border: 2px dashed #ddd; padding: 15px; text-align: center; border-radius: 8px; background: #f9f9f9; cursor: pointer; }
         .file-input-wrapper.has-file { border-color: #34c759; background: #e8f5e9; }
         input[type="file"] { display: none; }
-        .file-label { font-size: 14px; color: #007aff; pointer-events: none; }
 
         .loading { text-align: center; padding: 40px; color: #888; }
         .empty-state { text-align: center; padding: 40px; color: #888; font-style: italic; }
-        .btn-reset { background: #ff3b30; color: white; margin-top: 10px; width: 100%; padding: 15px; border-radius: 8px; border: none; font-size: 16px; font-weight: bold; }
-        .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
-        .btn-cancel { background: #e5e5ea; color: black; flex: 1; padding: 15px; border-radius: 8px; border: none; font-weight: bold; }
         
-        /* GRIGLIA MARCHE */
-        .brand-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .brand-btn { 
-            background: white; border-radius: 16px; padding: 20px 10px; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer; border: 1px solid transparent;
-            transition: all 0.2s; position: relative;
-        }
-        .brand-btn:active { background: #f2f2f7; transform: scale(0.98); }
-        .brand-text { font-size: 18px; font-weight: 800; color: #333; text-align: center; word-break: break-word; }
-        .brand-mini-actions { display: flex; gap: 15px; margin-top: 5px; opacity: 0.6; }
-        .brand-mini-btn { border: none; background: transparent; padding: 5px; cursor: pointer; z-index: 10; }
-        .brand-mini-btn:hover { opacity: 1; transform: scale(1.2); }
+        /* Utility */
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
     <script>
-        // 👇👇👇 INCOLLA I TUOI DATI QUI 👇👇👇
         window.SUPABASE_URL = 'https://uclxbadqwqrfpowmepzg.supabase.co';
         window.SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVjbHhiYWRxd3FyZnBvd21lcHpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMDkwNjgsImV4cCI6MjA4Njg4NTA2OH0.VI1I6JB2n9QwueYGDiKebRVIvDVl6kYd0agEw7pdw8I';
-        // 👆👆👆 -------------------- 👆👆👆
     </script>
 
     <div class="header">
         <div class="header-left">
             <button class="btn-back" id="btn-back" onclick="goBack()" style="display:none">
-                <i data-lucide="chevron-left"></i> Indietro
+                <i data-lucide="chevron-left" size="20"></i> Indietro
             </button>
             <span class="title" id="page-title">Negozio</span>
         </div>
@@ -247,9 +220,9 @@
                 <textarea id="inp-desc" class="input" style="height:80px"></textarea>
             </div>
 
-            <div style="display:flex; gap:10px;">
-                <button class="btn btn-cancel" onclick="closeProductModal()">Annulla</button>
-                <button class="btn btn-shop" style="flex:1" onclick="saveProduct()">Salva</button>
+            <div class="modal-btns">
+                <button class="btn" style="background:#e5e5ea; color:black" onclick="closeProductModal()">Annulla</button>
+                <button class="btn btn-shop" style="background:#007aff" onclick="saveProduct()">Salva</button>
             </div>
         </div>
     </div>
@@ -299,10 +272,10 @@
             </div>
 
             <div class="modal-btns">
-                <button class="btn btn-cancel" onclick="closeSearchModal()">Chiudi</button>
-                <button class="btn btn-shop" onclick="applySearch()">Cerca Ora</button>
+                <button class="btn" style="background:#e5e5ea; color:black" onclick="closeSearchModal()">Chiudi</button>
+                <button class="btn" style="background:#007aff" onclick="applySearch()">Cerca Ora</button>
             </div>
-            <button class="btn btn-reset" onclick="resetSearch()">Resetta Filtri</button>
+            <button class="btn" style="background:#ff3b30; margin-top:10px; width:100%" onclick="resetSearch()">Resetta Filtri</button>
         </div>
     </div>
 
@@ -329,6 +302,7 @@
             if (!error) products = data || [];
         }
 
+        // --- SISTEMA DI RENDERING ---
         function render() {
             const container = document.getElementById('app-container');
             const titleEl = document.getElementById('page-title');
@@ -338,6 +312,7 @@
             container.innerHTML = '';
             backBtn.style.display = state.view === 'home' ? 'none' : 'flex';
             
+            // Stato Tasto Cerca
             if (state.view === 'search_results') {
                 searchBtn.classList.add('active');
                 searchBtn.innerHTML = `🔍 Risultati`;
@@ -346,43 +321,54 @@
                 searchBtn.innerHTML = `🔍 Cerca`;
             }
 
+            // 1. HOME
             if (state.view === 'home') {
                 titleEl.innerText = "Negozio";
                 container.innerHTML = `
-                    <button class="big-btn btn-shop" onclick="navTo('shop_level1')">🏪 Negozio</button>
-                    <button class="big-btn btn-order" onclick="navTo('order')">📝 Da Ordinare</button>
+                    <button class="menu-btn" onclick="navTo('shop_level1')">
+                        <span>🏪 Negozio</span> <span class="menu-arrow">›</span>
+                    </button>
+                    <button class="menu-btn" onclick="navTo('order')">
+                        <span>📝 Da Ordinare</span> <span class="menu-arrow">›</span>
+                    </button>
                 `;
             } 
+            // 2. DA ORDINARE
             else if (state.view === 'order') {
                 titleEl.innerText = "Da Ordinare";
                 renderOrderPage(container);
             }
+            // 3. NEGOZIO - LIVELLO 1 (ANIMALE)
             else if (state.view === 'shop_level1') {
                 titleEl.innerText = "Reparto";
                 container.innerHTML = `
-                    <button class="big-btn btn-shop" onclick="setFilter('animal', 'dog')">🐶 Cane</button>
-                    <button class="big-btn btn-shop" style="background:#ff9500" onclick="setFilter('animal', 'cat')">🐱 Gatto</button>
-                    <button class="big-btn btn-shop" style="background:#34c759" onclick="alert('Questa sezione è in aggiornamento')">🦜 Esotici</button>
+                    <button class="menu-btn" onclick="setFilter('animal', 'dog')"><span>🐶 Cane</span> <span class="menu-arrow">›</span></button>
+                    <button class="menu-btn" onclick="setFilter('animal', 'cat')"><span>🐱 Gatto</span> <span class="menu-arrow">›</span></button>
+                    <button class="menu-btn" onclick="alert('Questa sezione è in aggiornamento')"><span>🦜 Esotici</span> <span class="menu-arrow">›</span></button>
                 `;
             }
+            // 4. NEGOZIO - LIVELLO 2 (CATEGORIA)
             else if (state.view === 'shop_level2') {
                 titleEl.innerText = state.animal === 'dog' ? "Cane" : "Gatto";
                 container.innerHTML = `
-                    <button class="big-btn btn-shop" style="background:#8d6e63" onclick="setFilter('category', 'Secco')">🍪 Secco</button>
-                    <button class="big-btn btn-shop" style="background:#007aff" onclick="setFilter('category', 'Umido')">💧 Umido</button>
+                    <button class="menu-btn" onclick="setFilter('category', 'Secco')"><span>🍪 Secco</span> <span class="menu-arrow">›</span></button>
+                    <button class="menu-btn" onclick="setFilter('category', 'Umido')"><span>💧 Umido</span> <span class="menu-arrow">›</span></button>
                 `;
             }
+            // 5. NEGOZIO - LIVELLO 3 (MARCHE)
             else if (state.view === 'shop_level3') {
                 titleEl.innerText = `${state.category}`;
                 renderBrandList(container);
             }
+            // 6. NEGOZIO - LIVELLO 4 (LINEA)
             else if (state.view === 'shop_level4') {
                 titleEl.innerText = state.brand;
                 container.innerHTML = `
-                    <button class="big-btn btn-shop" style="background:#ff3b30" onclick="setFilter('line', 'Medicati')">💊 Medicati</button>
-                    <button class="big-btn btn-shop" style="background:#34c759" onclick="setFilter('line', 'Mantenimento')">🥩 Mantenimento</button>
+                    <button class="menu-btn" onclick="setFilter('line', 'Medicati')"><span>💊 Medicati</span> <span class="menu-arrow">›</span></button>
+                    <button class="menu-btn" onclick="setFilter('line', 'Mantenimento')"><span>🥩 Mantenimento</span> <span class="menu-arrow">›</span></button>
                 `;
             }
+            // 7. NEGOZIO - LISTA PRODOTTI
             else if (state.view === 'shop_list') {
                 titleEl.innerText = `${state.line}`;
                 const filtered = products.filter(p => 
@@ -393,6 +379,7 @@
                 );
                 renderProductList(container, filtered);
             }
+            // 8. RISULTATI RICERCA
             else if (state.view === 'search_results') {
                 titleEl.innerText = "Risultati Ricerca";
                 const filtered = products.filter(p => {
@@ -411,12 +398,14 @@
             lucide.createIcons();
         }
 
+        // --- RENDERERS ---
+
         function renderBrandList(container) {
             const filtered = products.filter(p => p.type === state.animal && p.consistency === state.category);
             const brands = [...new Set(filtered.map(p => p.brand))].sort();
 
             if (brands.length === 0) {
-                container.innerHTML = `<div class="empty-state">Nessuna marca presente.<br>Premi + per aggiungerne una.</div>`;
+                container.innerHTML = `<div class="empty-state">Nessuna marca trovata.<br>Premi + per aggiungerne una.</div>`;
                 return;
             }
 
@@ -425,16 +414,16 @@
             
             brands.forEach(brand => {
                 const btn = document.createElement('div');
-                btn.className = 'brand-btn';
+                btn.className = 'brand-card';
                 btn.innerHTML = `
-                    <div class="brand-text">${brand}</div>
-                    <div class="brand-mini-actions">
-                        <button class="brand-mini-btn" onclick="editBrand('${brand}', event)" title="Modifica"><i data-lucide="edit-2" size="16"></i></button>
-                        <button class="brand-mini-btn" onclick="deleteBrand('${brand}', event)" title="Elimina" style="color:red"><i data-lucide="trash-2" size="16"></i></button>
+                    <div class="brand-name">${brand}</div>
+                    <div class="brand-tools">
+                        <button class="brand-tool-btn" onclick="editBrand('${brand}', event)"><i data-lucide="edit-2" size="16"></i></button>
+                        <button class="brand-tool-btn" onclick="deleteBrand('${brand}', event)" style="color:red"><i data-lucide="trash-2" size="16"></i></button>
                     </div>
                 `;
                 btn.onclick = (e) => {
-                    if(e.target.closest('.brand-mini-btn')) return;
+                    if(e.target.closest('.brand-tool-btn')) return;
                     setFilter('brand', brand);
                 };
                 grid.appendChild(btn);
@@ -449,13 +438,15 @@
             }
 
             filteredList.forEach(p => {
-                const div = document.createElement('div');
-                div.className = 'prod-card';
+                const li = document.createElement('div');
+                li.className = 'card';
                 
+                // STOCK LOGIC
                 const stockClass = p.quantity > 0 ? 'stock-ok' : 'stock-ko';
-                const stockText = p.quantity > 0 ? `Disponibile: ${p.quantity} pz` : `Non Disponibile`;
-                const stockIcon = p.quantity > 0 ? 'check-circle' : 'x-circle';
+                const dotClass = p.quantity > 0 ? 'dot-ok' : 'dot-ko';
+                const stockText = p.quantity > 0 ? `Disponibile (${p.quantity} pz)` : `Non disponibile`;
 
+                // TAGS
                 const typeTag = p.type === 'cat' ? '<span class="tag tag-cat">🐱 Gatto</span>' : '<span class="tag tag-dog">🐶 Cane</span>';
                 const consTag = p.consistency === 'Secco' ? '<span class="tag tag-dry">🍪 Secco</span>' : (p.consistency === 'Umido' ? '<span class="tag tag-wet">💧 Umido</span>' : '');
                 const brandTag = p.brand ? `<span class="tag tag-brand">${p.brand}</span>` : '';
@@ -463,34 +454,41 @@
                 
                 const img = p.img_url || `https://placehold.co/600x400/e3f2fd/444?text=${encodeURIComponent(p.full_name.substring(0,10))}&font=roboto`;
                 const rationHtml = p.ration_url ? 
-                    `<div class="img-container"><span class="img-label">📊 Tabella Razioni</span><img src="${p.ration_url}" class="prod-img" loading="lazy" onclick="window.open(this.src)"></div>` : '';
+                    `<div class="img-container"><span class="img-label">📊 Tabella Razioni</span><img src="${p.ration_url}" class="prod-img"></div>` : '';
 
-                div.innerHTML = `
-                    <div class="prod-header" onclick="toggle(this)">
+                li.innerHTML = `
+                    <div class="card-header" onclick="toggleCard(this)">
                         <div class="tags-row">${typeTag} ${consTag} ${brandTag} ${lineTag}</div>
                         <div class="prod-name">${p.full_name}</div>
-                        <div class="prod-weight">${p.weight || ''}</div>
-                        <div class="stock-indicator ${stockClass}">
-                            <i data-lucide="${stockIcon}" size="12"></i> ${stockText}
+                        <div class="prod-weight">⚖️ ${p.weight || 'N/A'}</div>
+                        <div class="stock-row ${stockClass}">
+                            <span class="stock-dot ${dotClass}"></span> ${stockText}
                         </div>
                     </div>
-                    <div class="prod-details">
-                        <div class="prod-content">
-                            <div class="img-container"><span class="img-label">🖼️ Prodotto</span><img src="${img}" class="prod-img" loading="lazy" onclick="window.open(this.src)"></div>
+                    <div class="details">
+                        <div class="content">
+                            <div class="img-container">
+                                <span class="img-label">🖼️ Prodotto</span>
+                                <img src="${img}" class="prod-img">
+                            </div>
                             <div class="desc">${p.description || "Nessuna descrizione."}</div>
                             ${rationHtml}
-                            <div class="prod-actions">
-                                <button class="btn-action btn-edit" onclick="editProduct(${p.id})"><i data-lucide="edit"></i> Modifica</button>
-                                <button class="btn-action btn-del" onclick="deleteProduct(${p.id})"><i data-lucide="trash"></i> Elimina</button>
+                            <div class="actions">
+                                <button class="btn btn-edit" onclick="editProduct(${p.id})">✏️ Modifica</button>
+                                <button class="btn btn-del" onclick="deleteProduct(${p.id})">🗑️ Elimina</button>
                             </div>
                         </div>
                     </div>
                 `;
-                container.appendChild(div);
+                container.appendChild(li);
             });
         }
         
-        function toggle(el) { el.parentElement.classList.toggle('expanded'); }
+        function toggleCard(headerElement) {
+            // Cerca il genitore 'card' e attiva la classe 'expanded'
+            const card = headerElement.parentElement;
+            card.classList.toggle('expanded');
+        }
 
         async function renderOrderPage(container) {
             container.innerHTML = `<div class="loading">Caricamento nota...</div>`;
@@ -499,11 +497,12 @@
             const noteId = data ? data.id : null;
 
             container.innerHTML = `
-                <textarea id="order-notes" class="notes-area" maxlength="1000" placeholder="Scrivi qui la lista della spesa...">${noteContent}</textarea>
+                <textarea id="order-notes" class="notes-area" maxlength="5000" placeholder="Scrivi qui la lista della spesa...">${noteContent}</textarea>
                 <button class="btn-save-note" onclick="saveNote(${noteId})">Salva Note</button>
             `;
         }
 
+        // --- NAVIGAZIONE ---
         function navTo(viewName) {
             state.view = viewName;
             render();
@@ -526,7 +525,7 @@
             if (key === 'line') navTo('shop_list');
         }
 
-        // --- GESTIONE MODALE RICERCA ---
+        // --- RICERCA E CRUD ---
         const modalSearch = document.getElementById('modal-search');
         function openSearchModal() {
             document.getElementById('s-brand').value = activeFilters.brand;
@@ -537,6 +536,7 @@
             modalSearch.classList.add('open');
         }
         function closeSearchModal() { modalSearch.classList.remove('open'); }
+        
         function applySearch() {
             activeFilters.brand = document.getElementById('s-brand').value.trim();
             activeFilters.text = document.getElementById('s-text').value.trim();
@@ -547,6 +547,7 @@
             render();
             closeSearchModal();
         }
+        
         function resetSearch() {
             activeFilters = { type: 'all', consistency: '', brand: '', line: '', text: '' };
             state.view = 'home';
@@ -554,7 +555,6 @@
             closeSearchModal();
         }
 
-        // --- CRUD ---
         async function saveNote(id) {
             const content = document.getElementById('order-notes').value;
             const btn = document.querySelector('.btn-save-note');
@@ -584,9 +584,7 @@
             }
         }
 
-        // --- GESTIONE MODALE PRODOTTO ---
         const modalProduct = document.getElementById('modal-product');
-        
         function updateLabel(type) {
             const input = document.getElementById('file-' + type);
             if (input.files && input.files[0]) {
@@ -609,12 +607,10 @@
         function openProductModal() {
             document.getElementById('modal-title').innerText = "Nuovo Prodotto";
             document.getElementById('edit-id').value = '';
-            
             document.getElementById('inp-type').value = state.animal || 'dog';
             document.getElementById('inp-consistency').value = state.category || 'Secco';
             document.getElementById('inp-brand').value = state.brand || '';
             document.getElementById('inp-line').value = state.line || ''; 
-            
             ['inp-full-name', 'inp-weight', 'inp-qty', 'inp-desc'].forEach(id => document.getElementById(id).value = '');
             document.getElementById('inp-qty').value = 0;
             resetFilesLabels();
@@ -636,11 +632,9 @@
             document.getElementById('inp-weight').value = p.weight;
             document.getElementById('inp-qty').value = p.quantity;
             document.getElementById('inp-desc').value = p.description;
-            
             resetFilesLabels();
             if(p.img_url) { document.getElementById('url-img').value = p.img_url; document.getElementById('lbl-img').innerText = "✅ Foto Ok"; document.getElementById('wrap-img').classList.add('has-file'); }
             if(p.ration_url) { document.getElementById('url-ration').value = p.ration_url; document.getElementById('lbl-ration').innerText = "✅ Tabella Ok"; document.getElementById('wrap-ration').classList.add('has-file'); }
-            
             modalProduct.classList.add('open');
         }
 
