@@ -10,19 +10,43 @@
 
     <style>
         /* --- STILE ORIGINALE "LISTINO PET FOOD" (iOS Style) --- */
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f2f2f7; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; color: #000; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f2f2f7; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; color: #000; }
         
-        /* HEADER */
-        .header { position: sticky; top: 0; background: rgba(242, 242, 247, 0.95); padding: 10px 15px; z-index: 100; border-bottom: 1px solid #c6c6c8; backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: space-between; height: 50px; }
-        .title { font-size: 22px; font-weight: 800; display: block; color: #000; margin: 0; }
+        /* HEADER (Titolo Centrato Perfettamente) */
+        .header { 
+            position: sticky; top: 0; background: rgba(242, 242, 247, 0.95); 
+            padding: 10px 15px; z-index: 100; border-bottom: 1px solid #c6c6c8; 
+            backdrop-filter: blur(10px); 
+            display: flex; align-items: center; justify-content: space-between; 
+            height: 44px; /* Altezza standard iOS */
+        }
         
-        .header-left { display: flex; align-items: center; gap: 5px; flex: 1; }
-        .btn-back { border: none; background: transparent; color: #007aff; font-size: 17px; display: flex; align-items: center; gap: 2px; cursor: pointer; padding: 0; font-weight: 500; }
+        .header-left { flex: 1; display: flex; justify-content: flex-start; z-index: 10; }
+        .header-right { flex: 1; display: flex; justify-content: flex-end; z-index: 10; }
+
+        .title { 
+            position: absolute; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            font-family: inherit; 
+            font-size: 17px; /* Dimensione standard iOS */
+            font-weight: 700; 
+            color: #000; 
+            margin: 0; 
+            text-align: center;
+            width: 50%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            z-index: 1;
+        }
+        
+        .btn-back { border: none; background: transparent; color: #007aff; font-size: 17px; display: flex; align-items: center; gap: 2px; cursor: pointer; padding: 0; font-weight: 500; font-family: inherit; }
 
         /* BOTTONE CERCA */
         .btn-search-trigger { 
-            background: #e3e3e8; color: #007aff; border: none; padding: 8px 12px; 
-            border-radius: 10px; font-weight: 600; font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 5px; 
+            background: #e3e3e8; color: #007aff; border: none; padding: 6px 12px; 
+            border-radius: 14px; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 5px; font-family: inherit;
         }
         .btn-search-trigger.active { background: #007aff; color: white; }
 
@@ -32,8 +56,10 @@
         /* CARD PRODOTTO (Stile Originale Ripristinato) */
         .card { background: #fff; margin-bottom: 12px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden; position: relative; transition: all 0.2s ease; }
         
-        .card-header { padding: 15px; cursor: pointer; position: relative; }
-        /* Freccia laterale originale */
+        .card-header { padding: 15px; cursor: pointer; position: relative; -webkit-tap-highlight-color: rgba(0,0,0,0.05); }
+        .card-header * { pointer-events: none; } /* Fix click iOS */
+
+        /* Freccia laterale */
         .card-header::after { content: '›'; position: absolute; right: 15px; top: 50%; transform: translateY(-50%) rotate(90deg); font-size: 22px; color: #c7c7cc; transition: 0.3s; }
         .card.expanded .card-header::after { transform: translateY(-50%) rotate(-90deg); color: #007aff; }
 
@@ -41,23 +67,23 @@
         .tags-row { display: flex; gap: 5px; margin-bottom: 4px; align-items: center; flex-wrap: wrap; padding-right: 25px; }
         .tag { font-size: 10px; text-transform: uppercase; font-weight: 700; border-radius: 4px; padding: 2px 5px; letter-spacing: 0.5px; display: inline-block; }
         
-        .tag-brand { color: #5856d6; background: #f2f2fd; } /* Viola */
-        .tag-line { color: #ff2d55; background: #fff0f2; }   /* Rosso chiaro */
-        .tag-wet { color: #007aff; background: #e3f2fd; }    /* Blu */
-        .tag-dry { color: #8d6e63; background: #efebe9; }    /* Marrone */
-        .tag-cat { color: #ff9500; background: #fff3e0; }    /* Arancio */
-        .tag-dog { color: #34c759; background: #e8f5e9; }    /* Verde */
+        .tag-brand { color: #5856d6; background: #f2f2fd; } 
+        .tag-line { color: #ff2d55; background: #fff0f2; }   
+        .tag-wet { color: #007aff; background: #e3f2fd; }    
+        .tag-dry { color: #8d6e63; background: #efebe9; }    
+        .tag-cat { color: #ff9500; background: #fff3e0; }    
+        .tag-dog { color: #34c759; background: #e8f5e9; }    
 
         .prod-name { font-size: 17px; font-weight: 700; color: #000; line-height: 1.3; padding-right: 20px; margin-top: 2px; }
         .prod-weight { font-size: 14px; color: #888; margin-top: 4px; font-weight: 500; }
 
-        /* STOCK (Nuova funzione, stile integrato) */
+        /* STOCK */
         .stock-row { margin-top: 8px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
         .stock-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
         .stock-ok { color: #34c759; } .dot-ok { background: #34c759; }
         .stock-ko { color: #ff3b30; } .dot-ko { background: #ff3b30; }
 
-        /* ACCORDION (Animazione Originale) */
+        /* ACCORDION */
         .details { max-height: 0; overflow: hidden; transition: max-height 0.35s ease-out; background: #fafafa; border-top: 1px solid #eee; }
         .card.expanded .details { max-height: 2500px; transition: max-height 0.5s ease-in; }
         
@@ -69,15 +95,16 @@
         .prod-img { max-width: 100%; max-height: 300px; width: auto; height: auto; object-fit: contain; display: block; margin: 0 auto; }
         .desc { font-size: 15px; line-height: 1.5; color: #444; white-space: pre-wrap; background: white; padding: 12px; border-radius: 8px; border: 1px solid #eee; }
 
-        /* BOTTONI AZIONE (Stile Originale: Arancio e Rosso) */
+        /* BOTTONI AZIONE */
         .actions { display: flex; gap: 10px; margin-top: 5px; }
-        .btn { flex: 1; padding: 12px; border-radius: 8px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; color: white; transition: 0.2s; }
+        .btn { flex: 1; padding: 12px; border-radius: 8px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; color: white; transition: 0.2s; font-family: inherit; }
         .btn:active { transform: scale(0.98); opacity: 0.9; }
-        .btn-edit { background: #ff9500; } /* Modifica Arancione */
-        .btn-del { background: #ff3b30; }  /* Elimina Rosso */
+        .btn-edit { background: #ff9500; } 
+        .btn-del { background: #ff3b30; }  
+        .btn-shop { background: #007aff; }
 
-        /* BOTTONI NAVIGAZIONE MENU (Stile iOS List) */
-        .menu-btn { background: white; padding: 20px; border-radius: 12px; margin-bottom: 10px; font-size: 18px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: none; width: 100%; text-align: left; color: #000; }
+        /* BOTTONI MENU (HOME) */
+        .menu-btn { background: white; padding: 20px; border-radius: 12px; margin-bottom: 10px; font-size: 18px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: none; width: 100%; text-align: left; color: #000; font-family: inherit; }
         .menu-btn:active { background: #e5e5ea; }
         .menu-arrow { color: #c7c7cc; font-size: 20px; }
 
@@ -85,28 +112,28 @@
         .brand-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .brand-card { background: white; border-radius: 12px; padding: 20px 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); cursor: pointer; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80px; }
         .brand-card:active { background: #f2f2f7; }
-        .brand-name { font-weight: 700; font-size: 16px; margin-bottom: 8px; }
+        .brand-name { font-weight: 700; font-size: 16px; margin-bottom: 8px; color: #000; }
         .brand-tools { display: flex; gap: 15px; opacity: 0.4; }
         .brand-tool-btn { border: none; background: transparent; padding: 5px; cursor: pointer; }
         .brand-tool-btn:hover { opacity: 1; transform: scale(1.2); }
 
         /* NOTE */
         .notes-area { width: 100%; height: 60vh; padding: 15px; font-size: 16px; border: 1px solid #c6c6c8; border-radius: 12px; resize: none; font-family: inherit; box-sizing: border-box; background: white; margin-bottom: 15px; }
-        .btn-save-note { background: #34c759; color: white; width: 100%; padding: 15px; border-radius: 12px; border: none; font-size: 18px; font-weight: bold; cursor: pointer; }
+        .btn-save-note { background: #34c759; color: white; width: 100%; padding: 15px; border-radius: 12px; border: none; font-size: 18px; font-weight: bold; cursor: pointer; font-family: inherit; }
 
         /* FAB (+) */
         .fab { position: fixed; bottom: 30px; right: 20px; width: 56px; height: 56px; background: #007aff; border-radius: 50%; color: white; border: none; font-size: 30px; box-shadow: 0 4px 12px rgba(0,122,255,0.4); cursor: pointer; z-index: 200; display: flex; align-items: center; justify-content: center; transition: transform 0.2s; }
         .fab:active { transform: scale(0.9); }
 
-        /* MODALE & FORM (Stile Originale) */
+        /* MODALE & FORM */
         .modal-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 500; display: none; align-items: flex-end; justify-content: center; backdrop-filter: blur(2px); }
         .modal-bg.open { display: flex; }
-        .modal { background: #fff; width: 100%; max-width: 600px; border-radius: 20px 20px 0 0; padding: 25px; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); animation: slideUp 0.3s; max-height: 90vh; overflow-y: auto; }
+        .modal { background: #fff; width: 100%; max-width: 600px; border-radius: 20px 20px 0 0; padding: 25px; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); animation: slideUp 0.3s; max-height: 90vh; overflow-y: auto; font-family: inherit; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
         .field { margin-bottom: 15px; }
         .label { display: block; font-size: 12px; color: #666; margin-bottom: 5px; font-weight: 700; text-transform: uppercase; }
-        .input, select, textarea { width: 100%; padding: 12px; font-size: 16px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; background: #f9f9f9; -webkit-appearance: none; }
+        .input, select, textarea { width: 100%; padding: 12px; font-size: 16px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; background: #f9f9f9; -webkit-appearance: none; font-family: inherit; }
         .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
         
         .file-input-wrapper { border: 2px dashed #ddd; padding: 15px; text-align: center; border-radius: 8px; background: #f9f9f9; cursor: pointer; }
@@ -116,8 +143,8 @@
         .loading { text-align: center; padding: 40px; color: #888; }
         .empty-state { text-align: center; padding: 40px; color: #888; font-style: italic; }
         
-        /* Utility */
-        .hidden { display: none !important; }
+        .btn-reset { background: #ff3b30; color: white; margin-top: 10px; width: 100%; padding: 15px; border-radius: 8px; border: none; font-size: 16px; font-weight: bold; font-family: inherit; }
+        .btn-cancel { background: #e5e5ea; color: black; flex: 1; padding: 15px; border-radius: 8px; border: none; font-weight: bold; font-family: inherit; }
     </style>
 </head>
 <body>
@@ -130,10 +157,10 @@
     <div class="header">
         <div class="header-left">
             <button class="btn-back" id="btn-back" onclick="goBack()" style="display:none">
-                <i data-lucide="chevron-left" size="20"></i> Indietro
+                <i data-lucide="chevron-left" size="22"></i>
             </button>
-            <span class="title" id="page-title">Negozio</span>
         </div>
+        <div class="title" id="page-title">Negozio</div>
         <div class="header-right">
             <button class="btn-search-trigger" onclick="openSearchModal()" id="btn-search-trigger">
                 🔍 Cerca
@@ -221,8 +248,8 @@
             </div>
 
             <div class="modal-btns">
-                <button class="btn" style="background:#e5e5ea; color:black" onclick="closeProductModal()">Annulla</button>
-                <button class="btn btn-shop" style="background:#007aff" onclick="saveProduct()">Salva</button>
+                <button class="btn btn-cancel" onclick="closeProductModal()">Annulla</button>
+                <button class="btn btn-shop" onclick="saveProduct()">Salva</button>
             </div>
         </div>
     </div>
@@ -272,10 +299,10 @@
             </div>
 
             <div class="modal-btns">
-                <button class="btn" style="background:#e5e5ea; color:black" onclick="closeSearchModal()">Chiudi</button>
-                <button class="btn" style="background:#007aff" onclick="applySearch()">Cerca Ora</button>
+                <button class="btn btn-cancel" onclick="closeSearchModal()">Chiudi</button>
+                <button class="btn btn-shop" onclick="applySearch()">Cerca Ora</button>
             </div>
-            <button class="btn" style="background:#ff3b30; margin-top:10px; width:100%" onclick="resetSearch()">Resetta Filtri</button>
+            <button class="btn btn-reset" onclick="resetSearch()">Resetta Filtri</button>
         </div>
     </div>
 
@@ -312,7 +339,6 @@
             container.innerHTML = '';
             backBtn.style.display = state.view === 'home' ? 'none' : 'flex';
             
-            // Stato Tasto Cerca
             if (state.view === 'search_results') {
                 searchBtn.classList.add('active');
                 searchBtn.innerHTML = `🔍 Risultati`;
@@ -321,7 +347,6 @@
                 searchBtn.innerHTML = `🔍 Cerca`;
             }
 
-            // 1. HOME
             if (state.view === 'home') {
                 titleEl.innerText = "Negozio";
                 container.innerHTML = `
@@ -333,12 +358,10 @@
                     </button>
                 `;
             } 
-            // 2. DA ORDINARE
             else if (state.view === 'order') {
                 titleEl.innerText = "Da Ordinare";
                 renderOrderPage(container);
             }
-            // 3. NEGOZIO - LIVELLO 1 (ANIMALE)
             else if (state.view === 'shop_level1') {
                 titleEl.innerText = "Reparto";
                 container.innerHTML = `
@@ -347,7 +370,6 @@
                     <button class="menu-btn" onclick="alert('Questa sezione è in aggiornamento')"><span>🦜 Esotici</span> <span class="menu-arrow">›</span></button>
                 `;
             }
-            // 4. NEGOZIO - LIVELLO 2 (CATEGORIA)
             else if (state.view === 'shop_level2') {
                 titleEl.innerText = state.animal === 'dog' ? "Cane" : "Gatto";
                 container.innerHTML = `
@@ -355,12 +377,10 @@
                     <button class="menu-btn" onclick="setFilter('category', 'Umido')"><span>💧 Umido</span> <span class="menu-arrow">›</span></button>
                 `;
             }
-            // 5. NEGOZIO - LIVELLO 3 (MARCHE)
             else if (state.view === 'shop_level3') {
                 titleEl.innerText = `${state.category}`;
                 renderBrandList(container);
             }
-            // 6. NEGOZIO - LIVELLO 4 (LINEA)
             else if (state.view === 'shop_level4') {
                 titleEl.innerText = state.brand;
                 container.innerHTML = `
@@ -368,7 +388,6 @@
                     <button class="menu-btn" onclick="setFilter('line', 'Mantenimento')"><span>🥩 Mantenimento</span> <span class="menu-arrow">›</span></button>
                 `;
             }
-            // 7. NEGOZIO - LISTA PRODOTTI
             else if (state.view === 'shop_list') {
                 titleEl.innerText = `${state.line}`;
                 const filtered = products.filter(p => 
@@ -379,7 +398,6 @@
                 );
                 renderProductList(container, filtered);
             }
-            // 8. RISULTATI RICERCA
             else if (state.view === 'search_results') {
                 titleEl.innerText = "Risultati Ricerca";
                 const filtered = products.filter(p => {
@@ -397,8 +415,6 @@
             }
             lucide.createIcons();
         }
-
-        // --- RENDERERS ---
 
         function renderBrandList(container) {
             const filtered = products.filter(p => p.type === state.animal && p.consistency === state.category);
@@ -441,12 +457,10 @@
                 const li = document.createElement('div');
                 li.className = 'card';
                 
-                // STOCK LOGIC
                 const stockClass = p.quantity > 0 ? 'stock-ok' : 'stock-ko';
                 const dotClass = p.quantity > 0 ? 'dot-ok' : 'dot-ko';
                 const stockText = p.quantity > 0 ? `Disponibile (${p.quantity} pz)` : `Non disponibile`;
 
-                // TAGS
                 const typeTag = p.type === 'cat' ? '<span class="tag tag-cat">🐱 Gatto</span>' : '<span class="tag tag-dog">🐶 Cane</span>';
                 const consTag = p.consistency === 'Secco' ? '<span class="tag tag-dry">🍪 Secco</span>' : (p.consistency === 'Umido' ? '<span class="tag tag-wet">💧 Umido</span>' : '');
                 const brandTag = p.brand ? `<span class="tag tag-brand">${p.brand}</span>` : '';
@@ -485,7 +499,6 @@
         }
         
         function toggleCard(headerElement) {
-            // Cerca il genitore 'card' e attiva la classe 'expanded'
             const card = headerElement.parentElement;
             card.classList.toggle('expanded');
         }
@@ -502,7 +515,6 @@
             `;
         }
 
-        // --- NAVIGAZIONE ---
         function navTo(viewName) {
             state.view = viewName;
             render();
@@ -525,7 +537,6 @@
             if (key === 'line') navTo('shop_list');
         }
 
-        // --- RICERCA E CRUD ---
         const modalSearch = document.getElementById('modal-search');
         function openSearchModal() {
             document.getElementById('s-brand').value = activeFilters.brand;
