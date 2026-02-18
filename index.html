@@ -14,7 +14,6 @@
         .header { position: sticky; top: 0; background: rgba(242, 242, 247, 0.95); padding: 15px; z-index: 100; border-bottom: 1px solid #c6c6c8; backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: space-between; }
         .title { font-size: 22px; font-weight: 800; display: block; color: #000; margin: 0; }
         
-        /* BOTTONE CERCA */
         .btn-search-trigger { 
             background: #e3e3e8; color: #007aff; border: none; padding: 8px 15px; 
             border-radius: 20px; font-weight: 600; font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 5px; 
@@ -54,7 +53,6 @@
 
         .fab { position: fixed; bottom: 30px; right: 20px; width: 56px; height: 56px; background: #007aff; border-radius: 50%; color: white; border: none; font-size: 30px; box-shadow: 0 4px 12px rgba(0,122,255,0.4); cursor: pointer; z-index: 200; display: flex; align-items: center; justify-content: center; }
         
-        /* MODALE GENERICA */
         .modal-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 500; display: none; align-items: flex-end; justify-content: center; backdrop-filter: blur(2px); }
         .modal-bg.open { display: flex; }
         .modal { background: #fff; width: 100%; max-width: 600px; border-radius: 20px 20px 0 0; padding: 25px; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); animation: slideUp 0.3s; max-height: 90vh; overflow-y: auto; }
@@ -76,19 +74,10 @@
         .btn-reset { background: #ff3b30; color: white; margin-top: 10px; }
         
         .loading { text-align: center; padding: 40px; color: #888; font-size: 14px; }
-        #debug-box { display: none; background: #333; color: #fff; padding: 20px; margin: 20px; border-radius: 8px; border: 2px solid red; }
+        .error-box { padding: 20px; background: #ffcccc; color: #cc0000; border-radius: 8px; text-align: center; border: 2px solid red; margin: 20px; font-weight: bold; }
     </style>
 </head>
 <body>
-
-    <script>
-        // 👇👇👇 INCOLLA I DATI QUI 👇👇👇
-        window.SUPABASE_URL = 'https://uclxbadqwqrfpowmepzg.supabase.co';
-        window.SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVjbHhiYWRxd3FyZnBvd21lcHpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMDkwNjgsImV4cCI6MjA4Njg4NTA2OH0.VI1I6JB2n9QwueYGDiKebRVIvDVl6kYd0agEw7pdw8I';
-        // 👆👆👆 -------------------- 👆👆👆
-    </script>
-
-    <div id="debug-box"></div>
 
     <div class="header">
         <span class="title">📦 Magazzino</span>
@@ -103,7 +92,296 @@
 
     <button class="fab" onclick="openProductModal()">+</button>
 
-
     <div class="modal-bg" id="modal-search">
         <div class="modal">
             <h2 style="margin-top:0; margin-bottom:20px;">🔍 Cerca nel Listino</h2>
+            <div class="field">
+                <label class="label">Marca</label>
+                <input type="text" id="s-brand" class="input" placeholder="Es. Exclusion, Monge...">
+            </div>
+            <div class="field">
+                <label class="label">Animale</label>
+                <select id="s-type">
+                    <option value="all">Tutti (Cane + Gatto)</option>
+                    <option value="dog">Solo Cane</option>
+                    <option value="cat">Solo Gatto</option>
+                </select>
+            </div>
+            <div class="field">
+                <label class="label">Contiene nel nome</label>
+                <input type="text" id="s-text" class="input" placeholder="Es. Renal, Puppy...">
+            </div>
+            <div class="modal-btns">
+                <button class="btn btn-cancel" onclick="closeSearchModal()">Chiudi</button>
+                <button class="btn btn-save" onclick="applySearch()">Cerca Ora</button>
+            </div>
+            <button class="btn btn-reset" onclick="resetSearch()">Resetta Filtri</button>
+        </div>
+    </div>
+
+    <div class="modal-bg" id="modal-product">
+        <div class="modal">
+            <h2 id="modal-title" style="margin-top:0; margin-bottom:20px;">Nuovo Prodotto</h2>
+            <input type="hidden" id="edit-id">
+            <div class="field">
+                <label class="label">Animale</label>
+                <select id="inp-type"><option value="dog">Cane</option><option value="cat">Gatto</option></select>
+            </div>
+            <div class="field">
+                <label class="label">Marca</label>
+                <input type="text" id="inp-brand" class="input" placeholder="Es. Monge">
+            </div>
+            <div class="field">
+                <label class="label">Nome Completo</label>
+                <input type="text" id="inp-full-name" class="input" placeholder="Es. Monge Renal">
+            </div>
+            <div class="field">
+                <label class="label">Formati / Peso</label>
+                <input type="text" id="inp-weight" class="input" placeholder="Es. 1.5kg">
+            </div>
+            <div style="display:flex; gap:10px;">
+                <div class="field" style="flex:1">
+                    <label class="label">Foto</label>
+                    <div class="file-input-wrapper" onclick="document.getElementById('file-img').click()" id="wrap-img">
+                        <span class="file-label" id="lbl-img">📸 Foto</span>
+                    </div>
+                    <input type="file" id="file-img" accept="image/*" onchange="updateLabel('img')">
+                    <input type="hidden" id="url-img"> 
+                </div>
+                <div class="field" style="flex:1">
+                    <label class="label">Tabella</label>
+                    <div class="file-input-wrapper" onclick="document.getElementById('file-ration').click()" id="wrap-ration">
+                        <span class="file-label" id="lbl-ration">📊 Tabella</span>
+                    </div>
+                    <input type="file" id="file-ration" accept="image/*" onchange="updateLabel('ration')">
+                    <input type="hidden" id="url-ration">
+                </div>
+            </div>
+            <div class="field">
+                <label class="label">Descrizione</label>
+                <textarea id="inp-desc" placeholder="Inserisci note..."></textarea>
+            </div>
+            <div class="modal-btns">
+                <button class="btn btn-cancel" onclick="closeProductModal()">Annulla</button>
+                <button class="btn btn-save" onclick="saveData()">Salva</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. INCOLLA QUI I TUOI DATI DI SUPABASE!
+        // ==========================================
+        const SUPABASE_URL = 'https://uclxbadqwqrfpowmepzg.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVjbHhiYWRxd3FyZnBvd21lcHpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMDkwNjgsImV4cCI6MjA4Njg4NTA2OH0.VI1I6JB2n9QwueYGDiKebRVIvDVl6kYd0agEw7pdw8I';
+        // ==========================================
+
+
+        let products = [];
+        let sb; 
+        
+        // Default: Mostra TUTTO all'apertura
+        let activeFilters = { brand: "", type: "all", text: "" };
+
+        // AVVIO
+        document.addEventListener("DOMContentLoaded", () => {
+            const listEl = document.getElementById('list');
+            
+            // CONTROLLO SICUREZZA
+            if (!SUPABASE_URL || SUPABASE_URL.includes("INCOLLA")) {
+                listEl.innerHTML = `<div class="error-box">⛔ FERMO!<br>Hai dimenticato di incollare URL e KEY nel codice.<br>Scorri in basso fino alla sezione SCRIPT e incollali tra le virgolette.</div>`;
+                return;
+            }
+
+            try {
+                sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                fetchProducts();
+            } catch (e) {
+                listEl.innerHTML = `<div class="error-box">Errore di Inizializzazione:<br>${e.message}</div>`;
+            }
+        });
+
+        async function fetchProducts() {
+            const listEl = document.getElementById('list');
+            listEl.innerHTML = '<div class="loading">Caricamento listino completo...</div>';
+            try {
+                const { data, error } = await sb.from('products').select('*').order('full_name', { ascending: true });
+                if (error) throw error;
+                products = data || [];
+                render();
+            } catch (err) {
+                listEl.innerHTML = `<div class="error-box">Errore Supabase:<br>${err.message}</div>`;
+            }
+        }
+
+        // --- RENDERIZZA LA LISTA ---
+        function render() {
+            const listEl = document.getElementById('list');
+            listEl.innerHTML = '';
+
+            const filtered = products.filter(p => {
+                if (activeFilters.type !== 'all' && p.type !== activeFilters.type) return false;
+                if (activeFilters.brand && !(p.brand || "").toLowerCase().includes(activeFilters.brand.toLowerCase())) return false;
+                if (activeFilters.text) {
+                    const searchStr = (p.full_name + " " + (p.brand || "")).toLowerCase();
+                    if (!searchStr.includes(activeFilters.text.toLowerCase())) return false;
+                }
+                return true;
+            });
+            
+            // Aggiorna tasto Cerca
+            const btnSearch = document.getElementById('btn-search-trigger');
+            if(activeFilters.brand || activeFilters.text || activeFilters.type !== 'all') {
+                btnSearch.classList.add('active');
+                btnSearch.innerHTML = `🔍 Cerca (${filtered.length})`;
+            } else {
+                btnSearch.classList.remove('active');
+                btnSearch.innerHTML = `🔍 Cerca`;
+            }
+
+            if (filtered.length === 0) {
+                listEl.innerHTML = '<div class="loading">Nessun prodotto trovato.</div>';
+                return;
+            }
+
+            filtered.forEach(p => {
+                const li = document.createElement('li');
+                li.className = 'card';
+                const img = p.img_url || `https://placehold.co/600x400/e3f2fd/444?text=${encodeURIComponent(p.full_name.substring(0,15))}&font=roboto`;
+                
+                let rationHtml = p.ration_url ? `<div class="img-container" style="margin-top:10px;"><span class="img-label">📊 Tabella Razioni</span><img src="${p.ration_url}" class="prod-img" loading="lazy" onclick="window.open(this.src)"></div>` : '';
+                
+                const typeHtml = p.type === 'cat' ? `<span class="tag tag-cat">🐱 Gatto</span>` : `<span class="tag tag-dog">🐶 Cane</span>`;
+                const brandHtml = p.brand ? `<span class="tag tag-brand">${p.brand}</span>` : '';
+
+                li.innerHTML = `
+                    <div class="card-header" onclick="toggle(this)">
+                        <div class="tags-row">${typeHtml} ${brandHtml}</div>
+                        <div class="full-name">${p.full_name}</div>
+                        ${p.weight ? `<div class="weight">⚖️ ${p.weight}</div>` : ''}
+                    </div>
+                    <div class="details">
+                        <div class="content">
+                            <div class="img-container"><span class="img-label">🖼️ Prodotto</span><img src="${img}" class="prod-img" loading="lazy" onclick="window.open(this.src)"></div>
+                            <div class="desc">${p.description || "Nessuna descrizione."}</div>
+                            ${rationHtml}
+                            <div class="actions">
+                                <button class="btn btn-edit" onclick="edit(${p.id})">✏️ Modifica</button>
+                                <button class="btn btn-del" onclick="del(${p.id}, '${p.full_name}')">🗑️ Elimina</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                listEl.appendChild(li);
+            });
+        }
+
+        function toggle(el) { el.parentElement.classList.toggle('expanded'); }
+
+        // --- MODALE RICERCA ---
+        const modalSearch = document.getElementById('modal-search');
+        function openSearchModal() {
+            document.getElementById('s-brand').value = activeFilters.brand;
+            document.getElementById('s-text').value = activeFilters.text;
+            document.getElementById('s-type').value = activeFilters.type;
+            modalSearch.classList.add('open');
+        }
+        function closeSearchModal() { modalSearch.classList.remove('open'); }
+        function applySearch() {
+            activeFilters.brand = document.getElementById('s-brand').value.trim();
+            activeFilters.text = document.getElementById('s-text').value.trim();
+            activeFilters.type = document.getElementById('s-type').value;
+            render();
+            closeSearchModal();
+        }
+        function resetSearch() {
+            activeFilters = { brand: "", text: "", type: "all" }; 
+            render();
+            closeSearchModal();
+        }
+
+        // --- MODALE PRODOTTO ---
+        const modalProduct = document.getElementById('modal-product');
+        function openProductModal() {
+            document.getElementById('modal-title').innerText = "Nuovo Prodotto";
+            document.getElementById('edit-id').value = '';
+            document.getElementById('inp-type').value = 'dog'; 
+            ['inp-brand', 'inp-full-name', 'inp-weight', 'inp-desc', 'file-img', 'file-ration', 'url-img', 'url-ration'].forEach(id => {
+               if(document.getElementById(id)) document.getElementById(id).value = '';
+            });
+            resetFilesLabels();
+            modalProduct.classList.add('open');
+        }
+        function closeProductModal() { modalProduct.classList.remove('open'); }
+        function updateLabel(type) {
+            const input = document.getElementById('file-' + type);
+            if (input.files && input.files[0]) {
+                document.getElementById('lbl-' + type).innerText = "✅ " + input.files[0].name.substring(0, 10) + "...";
+                document.getElementById('wrap-' + type).classList.add('has-file');
+            }
+        }
+        function resetFilesLabels() {
+            document.getElementById('lbl-img').innerText = "📸 Foto";
+            document.getElementById('wrap-img').classList.remove('has-file');
+            document.getElementById('lbl-ration').innerText = "📊 Tabella";
+            document.getElementById('wrap-ration').classList.remove('has-file');
+        }
+        function edit(id) {
+            const p = products.find(x => x.id == id);
+            if(!p) return;
+            document.getElementById('modal-title').innerText = "Modifica Prodotto";
+            document.getElementById('edit-id').value = id;
+            document.getElementById('inp-type').value = p.type;
+            document.getElementById('inp-brand').value = p.brand || '';
+            document.getElementById('inp-full-name').value = p.full_name;
+            document.getElementById('inp-weight').value = p.weight || '';
+            document.getElementById('inp-desc').value = p.description || '';
+            resetFilesLabels();
+            if(p.img_url) { document.getElementById('url-img').value = p.img_url; document.getElementById('lbl-img').innerText = "✅ Foto Ok"; document.getElementById('wrap-img').classList.add('has-file'); }
+            if(p.ration_url) { document.getElementById('url-ration').value = p.ration_url; document.getElementById('lbl-ration').innerText = "✅ Tabella Ok"; document.getElementById('wrap-ration').classList.add('has-file'); }
+            modalProduct.classList.add('open');
+        }
+        async function uploadImage(file) {
+            if (!file) return null;
+            const fileName = Date.now() + '-' + file.name.replace(/\s+/g, '-');
+            const { data, error } = await sb.storage.from('images').upload(fileName, file);
+            if (error) throw error;
+            return sb.storage.from('images').getPublicUrl(fileName).data.publicUrl;
+        }
+        async function saveData() {
+            const btn = document.querySelector('.btn-save');
+            btn.disabled = true; btn.innerText = "Salvataggio...";
+            try {
+                const id = document.getElementById('edit-id').value;
+                const fileImg = document.getElementById('file-img').files[0];
+                const fileRation = document.getElementById('file-ration').files[0];
+                let imgUrl = document.getElementById('url-img').value;
+                let rationUrl = document.getElementById('url-ration').value;
+                if (fileImg) { btn.innerText = "Carico Foto..."; imgUrl = await uploadImage(fileImg); }
+                if (fileRation) { btn.innerText = "Carico Tabella..."; rationUrl = await uploadImage(fileRation); }
+                const payload = {
+                    type: document.getElementById('inp-type').value,
+                    brand: document.getElementById('inp-brand').value,
+                    full_name: document.getElementById('inp-full-name').value,
+                    weight: document.getElementById('inp-weight').value,
+                    description: document.getElementById('inp-desc').value,
+                    img_url: imgUrl,
+                    ration_url: rationUrl
+                };
+                if(!payload.full_name) throw new Error("Nome mancante!");
+                if (id) await sb.from('products').update(payload).eq('id', id);
+                else await sb.from('products').insert([payload]);
+                await fetchProducts();
+                closeProductModal();
+            } catch (e) { alert("Errore: " + e.message); } 
+            finally { btn.disabled = false; btn.innerText = "Salva"; }
+        }
+        async function del(id, name) {
+            if(confirm(`Eliminare ${name}?`)) {
+                await sb.from('products').delete().eq('id', id);
+                fetchProducts();
+            }
+        }
+    </script>
+</body>
+</html>
