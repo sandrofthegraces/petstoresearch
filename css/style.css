@@ -85,7 +85,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helve
 input[type="file"] { display: none; }
 .file-label { font-size: 14px; color: #007aff; pointer-events: none; }
 
-.loading { text-align: center; padding: 40px; color: #888; }
+.loading-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 60vh; /* Centrato verticalmente */ color: #888; font-weight: 500; gap: 15px; }
+.spinner { width: 40px; height: 40px; border: 4px solid #e3e3e8; /* Grigio chiaro */ border-top: 4px solid #007aff; /* Blu iOS */ border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 .empty-state { text-align: center; padding: 40px; color: #888; font-style: italic; }
 .btn-reset { background: #ff3b30; color: white; margin-top: 10px; width: 100%; padding: 15px; border-radius: 8px; border: none; font-size: 16px; font-weight: bold; font-family: inherit; }
 .btn-cancel { background: #e5e5ea; color: black; flex: 1; padding: 15px; border-radius: 8px; border: none; font-weight: bold; font-family: inherit; }

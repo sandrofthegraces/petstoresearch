@@ -33,6 +33,15 @@ export function renderLevel4() {
     `;
 }
 
+export function renderLoading() {
+    return `
+        <div class="loading-container">
+            <div class="spinner"></div>
+            <div>Caricamento in corso...</div>
+        </div>
+    `;
+}
+
 export function renderOrderPage(noteContent, noteId) {
     return `
         <textarea id="order-notes" class="notes-area" maxlength="5000" placeholder="Scrivi qui la lista della spesa...">${noteContent || ''}</textarea>

@@ -12,7 +12,13 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function initApp() {
+    // 1. Mostra Caricamento all'avvio
+    document.getElementById('app-container').innerHTML = UI.renderLoading();
+    
+    // 2. Carica i dati
     products = await Data.fetchAllProducts();
+    
+    // 3. Mostra la schermata corretta
     render();
 }
 
@@ -23,7 +29,9 @@ function render() {
     const backBtn = document.getElementById('btn-back');
     const searchBtn = document.getElementById('btn-search-trigger');
 
-    container.innerHTML = '';
+    // Reset Container (ma non se stiamo caricando dati asincroni specifici)
+    if(state.view !== 'order') container.innerHTML = '';
+    
     backBtn.style.display = state.view === 'home' ? 'none' : 'flex';
     
     // Stato Bottone Cerca
@@ -42,7 +50,7 @@ function render() {
     } 
     else if (state.view === 'order') {
         titleEl.innerText = "Da Ordinare";
-        loadOrderPage(container);
+        loadOrderPage(container); // Funzione dedicata che gestisce il suo loading
     }
     else if (state.view === 'shop_level1') {
         titleEl.innerText = "Reparto";
@@ -57,7 +65,7 @@ function render() {
         const filtered = products.filter(p => p.type === state.animal && p.consistency === state.category);
         const brands = [...new Set(filtered.map(p => p.brand))].sort();
         container.innerHTML = UI.renderBrandGrid(brands);
-        lucide.createIcons(); // Ricarica icone
+        lucide.createIcons();
     }
     else if (state.view === 'shop_level4') {
         titleEl.innerText = state.brand;
@@ -81,8 +89,12 @@ function render() {
 }
 
 async function loadOrderPage(container) {
-    container.innerHTML = '<div class="loading">Caricamento...</div>';
+    // Mostra loading specifico per la pagina ordini
+    container.innerHTML = UI.renderLoading();
+    
     const data = await Data.fetchNotes();
+    
+    // Una volta caricato, mostra il contenuto
     container.innerHTML = UI.renderOrderPage(data ? data.content : "", data ? data.id : null);
 }
 
@@ -101,8 +113,7 @@ function applySearchFilters() {
     });
 }
 
-// --- ESPOSIZIONE GLOBALE (Bridge per HTML onclick) ---
-// Poiché usiamo i moduli, le funzioni non sono globali. Dobbiamo attaccarle a window.
+// --- ESPOSIZIONE GLOBALE ---
 
 window.navTo = (viewName) => { state.view = viewName; render(); };
 
@@ -151,6 +162,9 @@ window.editBrand = async (oldBrand, event) => {
         if(!confirm(`⚠️ La marca "${newBrand}" esiste già.\nVuoi unire i prodotti di "${oldBrand}" dentro "${newBrand}"?`)) return;
     }
 
+    // Mostra loading durante l'aggiornamento
+    document.getElementById('app-container').innerHTML = UI.renderLoading();
+    
     await Data.updateBrandName(oldBrand, newBrand);
     await initApp(); // Ricarica tutto
 };
@@ -158,6 +172,9 @@ window.editBrand = async (oldBrand, event) => {
 window.deleteBrand = async (brand, event) => {
     event.stopPropagation();
     if (confirm(`Eliminare TUTTI i prodotti marca "${brand}"?`)) {
+        // Mostra loading
+        document.getElementById('app-container').innerHTML = UI.renderLoading();
+        
         await Data.deleteBrandProducts(brand);
         await initApp();
     }
@@ -166,6 +183,9 @@ window.deleteBrand = async (brand, event) => {
 // --- GESTIONE PRODOTTI ---
 window.deleteProduct = async (id) => {
     if (confirm("Eliminare prodotto?")) {
+        // Mostra loading per evitare doppi click
+        document.getElementById('app-container').innerHTML = UI.renderLoading();
+        
         await Data.deleteProductById(id);
         await initApp();
     }
@@ -240,17 +260,21 @@ window.saveProduct = async () => {
 
         if (!payload.brand || !payload.full_name) throw new Error("Marca e Nome sono obbligatori");
 
-        await Data.saveProductToDb(id, payload);
+        // Chiudi modale e mostra loading nella schermata principale
         window.closeProductModal();
-        await initApp();
+        document.getElementById('app-container').innerHTML = UI.renderLoading();
+
+        await Data.saveProductToDb(id, payload);
+        await initApp(); // Ricarica
     } catch (e) {
         alert("Errore: " + e.message);
-    } finally {
         btn.disabled = false; btn.innerText = originalText;
     }
 };
 
-// Ricerca
+// ... (Il resto delle funzioni di ricerca e utility rimangono identiche) ...
+// Per completezza, includo le funzioni sotto, così puoi copiare tutto il file
+
 const modalSearch = document.getElementById('modal-search');
 window.openSearchModal = () => {
     document.getElementById('s-brand').value = activeFilters.brand;
@@ -269,7 +293,11 @@ window.applySearch = () => {
     activeFilters.consistency = document.getElementById('s-consistency').value;
     activeFilters.line = document.getElementById('s-line').value;
     state.view = 'search_results';
-    render();
+    
+    // Mostra loading prima dei risultati (anche se locale, è una buona prassi visiva)
+    document.getElementById('app-container').innerHTML = UI.renderLoading();
+    setTimeout(() => render(), 300); // Piccolo delay finto per far vedere l'animazione di cambio contesto
+    
     window.closeSearchModal();
 };
 
@@ -280,7 +308,6 @@ window.resetSearch = () => {
     window.closeSearchModal();
 };
 
-// Utils UI
 window.updateLabel = (type) => {
     const input = document.getElementById('file-' + type);
     if (input.files && input.files[0]) {
