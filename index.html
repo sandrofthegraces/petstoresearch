@@ -21,39 +21,41 @@
 
         .btn-back { border: none; background: transparent; color: #007aff; font-size: 17px; display: flex; align-items: center; gap: 5px; cursor: pointer; padding: 0; font-weight: 500; }
         
-        /* BOTTONE CERCA (Come prima) */
-        .btn-search-trigger { 
-            background: #e3e3e8; color: #007aff; border: none; padding: 8px 15px; 
-            border-radius: 20px; font-weight: 600; font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 5px; 
-        }
+        .btn-search-trigger { background: #e3e3e8; color: #007aff; border: none; padding: 8px 15px; border-radius: 20px; font-weight: 600; font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 5px; }
         .btn-search-trigger.active { background: #007aff; color: white; }
 
         /* CONTENITORE PRINCIPALE */
         #app-container { padding: 20px; padding-bottom: 100px; }
 
-        /* BOTTONI GRANDI DI NAVIGAZIONE */
+        /* BOTTONI GRANDI (HOME/CATEGORIE) */
         .big-btn { display: flex; align-items: center; justify-content: center; width: 100%; padding: 25px; margin-bottom: 15px; border-radius: 16px; border: none; font-size: 22px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: transform 0.1s; }
         .big-btn:active { transform: scale(0.98); }
         .btn-shop { background: #007aff; color: white; }
         .btn-order { background: #ff9500; color: white; }
 
-        /* LISTA DI NAVIGAZIONE (Marche) */
-        .nav-list { list-style: none; padding: 0; margin: 0; }
-        .nav-item { background: white; padding: 18px; margin-bottom: 10px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 18px; font-weight: 600; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .nav-item:active { background: #f2f2f2; }
-        .nav-arrow { color: #c7c7cc; }
-
-        /* AREA NOTE */
-        .notes-area { width: 100%; height: 60vh; padding: 15px; font-size: 16px; border: 1px solid #ddd; border-radius: 12px; resize: none; font-family: inherit; box-sizing: border-box; background: white; }
-        .btn-save-note { background: #34c759; color: white; width: 100%; padding: 15px; border-radius: 12px; border: none; font-size: 18px; font-weight: bold; margin-top: 15px; cursor: pointer; }
-
-        /* CARD PRODOTTO (Stile Ripristinato) */
-        .prod-card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 8px; }
+        /* --- GRIGLIA MARCHE (NUOVO STILE) --- */
+        .brand-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         
+        .brand-btn { 
+            background: white; border-radius: 16px; padding: 20px 10px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer; border: 1px solid transparent;
+            transition: all 0.2s; position: relative;
+        }
+        .brand-btn:active { background: #f2f2f7; transform: scale(0.98); }
+        
+        .brand-text { font-size: 18px; font-weight: 800; color: #333; text-align: center; word-break: break-word; }
+        
+        /* Icone modifica/cancella marca (piccole in basso) */
+        .brand-mini-actions { display: flex; gap: 15px; margin-top: 5px; opacity: 0.6; }
+        .brand-mini-btn { border: none; background: transparent; padding: 5px; cursor: pointer; z-index: 10; }
+        .brand-mini-btn:hover { opacity: 1; transform: scale(1.2); }
+
+        /* CARD PRODOTTO */
+        .prod-card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 8px; }
         .tags-row { display: flex; gap: 6px; margin-bottom: 4px; align-items: center; flex-wrap: wrap; }
         .tag { font-size: 10px; text-transform: uppercase; font-weight: 800; border-radius: 4px; padding: 3px 6px; letter-spacing: 0.5px; }
         
-        /* COLORI TAG & EMOJI */
         .tag-brand { color: #5856d6; background: #f2f2fd; border: 1px solid #dcdcfc; }
         .tag-line { color: #ff2d55; background: #fff0f2; border: 1px solid #ffccd5; }
         .tag-wet { color: #007aff; background: #e3f2fd; border: 1px solid #bbdcfc; }
@@ -63,7 +65,6 @@
 
         .prod-name { font-size: 17px; font-weight: 700; color: #000; line-height: 1.3; }
         .prod-weight { font-size: 14px; color: #888; }
-        
         .stock-indicator { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 700; padding: 4px 8px; border-radius: 6px; margin-top: 5px; }
         .stock-ok { background: #e8f5e9; color: #34c759; }
         .stock-ko { background: #ffebee; color: #ff3b30; }
@@ -73,26 +74,23 @@
         .btn-edit { background: #e3e3e8; color: #007aff; }
         .btn-del { background: #ffebee; color: #ff3b30; }
 
-        .brand-actions { display: flex; gap: 10px; }
-        .btn-icon { background: none; border: none; padding: 5px; cursor: pointer; color: #888; }
-
         .fab { position: fixed; bottom: 30px; right: 20px; width: 60px; height: 60px; background: #007aff; border-radius: 50%; color: white; border: none; font-size: 35px; box-shadow: 0 4px 15px rgba(0,122,255,0.4); cursor: pointer; z-index: 200; display: flex; align-items: center; justify-content: center; }
 
         /* MODALE */
         .modal-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 500; display: none; align-items: flex-end; justify-content: center; backdrop-filter: blur(2px); }
         .modal-bg.open { display: flex; }
         .modal { background: #fff; width: 100%; max-width: 600px; border-radius: 20px 20px 0 0; padding: 25px; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); animation: slideUp 0.3s; max-height: 90vh; overflow-y: auto; }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-
         .field { margin-bottom: 15px; }
         .label { display: block; font-size: 12px; color: #666; margin-bottom: 5px; font-weight: 700; text-transform: uppercase; }
         .input, select, textarea { width: 100%; padding: 12px; font-size: 16px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; background: #f9f9f9; -webkit-appearance: none; }
-        
         .loading { text-align: center; padding: 40px; color: #888; }
         .empty-state { text-align: center; padding: 40px; color: #888; font-style: italic; }
         .btn-reset { background: #ff3b30; color: white; margin-top: 10px; width: 100%; padding: 15px; border-radius: 8px; border: none; font-size: 16px; font-weight: bold; }
         .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
         .btn-cancel { background: #e5e5ea; color: black; flex: 1; padding: 15px; border-radius: 8px; border: none; font-weight: bold; }
+        
+        .notes-area { width: 100%; height: 60vh; padding: 15px; font-size: 16px; border: 1px solid #ddd; border-radius: 12px; resize: none; font-family: inherit; box-sizing: border-box; background: white; }
+        .btn-save-note { background: #34c759; color: white; width: 100%; padding: 15px; border-radius: 12px; border: none; font-size: 18px; font-weight: bold; margin-top: 15px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -241,20 +239,9 @@
     <script>
         let sb;
         let products = [];
-        
-        // STATO DI NAVIGAZIONE
-        let state = {
-            view: 'home', // home, order, shop_levelX, search_results
-            animal: null, 
-            category: null, 
-            brand: null, 
-            line: null
-        };
-        
-        // FILTRI RICERCA
+        let state = { view: 'home', animal: null, category: null, brand: null, line: null };
         let activeFilters = { type: 'all', consistency: '', brand: '', line: '', text: '' };
 
-        // AVVIO
         document.addEventListener("DOMContentLoaded", () => {
             lucide.createIcons();
             if (!window.SUPABASE_URL || window.SUPABASE_URL.includes("INCOLLA")) {
@@ -262,7 +249,6 @@
                 return;
             }
             sb = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
-            
             fetchAllProducts();
             render();
         });
@@ -272,7 +258,7 @@
             if (!error) products = data || [];
         }
 
-        // --- SISTEMA DI RENDERING ---
+        // --- RENDER SYSTEM ---
         function render() {
             const container = document.getElementById('app-container');
             const titleEl = document.getElementById('page-title');
@@ -280,11 +266,8 @@
             const searchBtn = document.getElementById('btn-search-trigger');
 
             container.innerHTML = '';
-            
-            // Gestione visibilità pulsanti Header
             backBtn.style.display = state.view === 'home' ? 'none' : 'flex';
             
-            // Aggiorna stato bottone ricerca
             if (state.view === 'search_results') {
                 searchBtn.classList.add('active');
                 searchBtn.innerHTML = `🔍 Risultati`;
@@ -293,7 +276,6 @@
                 searchBtn.innerHTML = `🔍 Cerca`;
             }
 
-            // 1. HOME PAGE
             if (state.view === 'home') {
                 titleEl.innerText = "Negozio";
                 container.innerHTML = `
@@ -301,14 +283,10 @@
                     <button class="big-btn btn-order" onclick="navTo('order')">📝 Da Ordinare</button>
                 `;
             } 
-            
-            // 2. DA ORDINARE
             else if (state.view === 'order') {
                 titleEl.innerText = "Da Ordinare";
                 renderOrderPage(container);
             }
-
-            // 3. NEGOZIO - LIVELLO 1 (ANIMALE)
             else if (state.view === 'shop_level1') {
                 titleEl.innerText = "Reparto";
                 container.innerHTML = `
@@ -317,8 +295,6 @@
                     <button class="big-btn btn-shop" style="background:#34c759" onclick="alert('Questa sezione è in aggiornamento')">🦜 Esotici</button>
                 `;
             }
-
-            // 4. NEGOZIO - LIVELLO 2 (CATEGORIA)
             else if (state.view === 'shop_level2') {
                 titleEl.innerText = state.animal === 'dog' ? "Cane" : "Gatto";
                 container.innerHTML = `
@@ -326,14 +302,10 @@
                     <button class="big-btn btn-shop" style="background:#007aff" onclick="setFilter('category', 'Umido')">💧 Umido</button>
                 `;
             }
-
-            // 5. NEGOZIO - LIVELLO 3 (MARCHE)
             else if (state.view === 'shop_level3') {
                 titleEl.innerText = `${state.category}`;
                 renderBrandList(container);
             }
-
-            // 6. NEGOZIO - LIVELLO 4 (LINEA)
             else if (state.view === 'shop_level4') {
                 titleEl.innerText = state.brand;
                 container.innerHTML = `
@@ -341,11 +313,8 @@
                     <button class="big-btn btn-shop" style="background:#34c759" onclick="setFilter('line', 'Mantenimento')">🥩 Mantenimento</button>
                 `;
             }
-
-            // 7. NEGOZIO - LISTA PRODOTTI
             else if (state.view === 'shop_list') {
                 titleEl.innerText = `${state.line}`;
-                // Filtro stretto per la navigazione gerarchica
                 const filtered = products.filter(p => 
                     p.type === state.animal && 
                     p.consistency === state.category &&
@@ -354,11 +323,8 @@
                 );
                 renderProductList(container, filtered);
             }
-
-            // 8. RISULTATI RICERCA (FLAT LIST)
             else if (state.view === 'search_results') {
                 titleEl.innerText = "Risultati Ricerca";
-                // Filtro largo per la ricerca
                 const filtered = products.filter(p => {
                     if (activeFilters.type !== 'all' && p.type !== activeFilters.type) return false;
                     if (activeFilters.consistency && p.consistency !== activeFilters.consistency) return false;
@@ -372,7 +338,6 @@
                 });
                 renderProductList(container, filtered);
             }
-            
             lucide.createIcons();
         }
 
@@ -383,27 +348,33 @@
             const brands = [...new Set(filtered.map(p => p.brand))].sort();
 
             if (brands.length === 0) {
-                container.innerHTML = `<div class="empty-state">Nessuna marca presente.<br>Premi + per aggiungerne una.</div>`;
+                container.innerHTML = `<div class="empty-state">Nessuna marca trovata.<br>Assicurati di aver inserito prodotti "Secco" o "Umido" per questo animale.</div>`;
                 return;
             }
 
-            const ul = document.createElement('ul');
-            ul.className = 'nav-list';
+            // CREO GRIGLIA DI BOTTONI
+            const grid = document.createElement('div');
+            grid.className = 'brand-grid';
             
             brands.forEach(brand => {
-                const li = document.createElement('li');
-                li.className = 'nav-item';
-                li.innerHTML = `
-                    <span onclick="setFilter('brand', '${brand}')">${brand}</span>
-                    <div class="brand-actions">
-                        <button class="btn-icon" onclick="editBrand('${brand}')"><i data-lucide="edit-2"></i></button>
-                        <button class="btn-icon" onclick="deleteBrand('${brand}')" style="color:red"><i data-lucide="trash-2"></i></button>
-                        <i data-lucide="chevron-right" class="nav-arrow"></i>
+                const btn = document.createElement('div');
+                btn.className = 'brand-btn';
+                btn.innerHTML = `
+                    <div class="brand-text">${brand}</div>
+                    <div class="brand-mini-actions">
+                        <button class="brand-mini-btn" onclick="editBrand('${brand}', event)" title="Modifica"><i data-lucide="edit-2" size="16"></i></button>
+                        <button class="brand-mini-btn" onclick="deleteBrand('${brand}', event)" title="Elimina" style="color:red"><i data-lucide="trash-2" size="16"></i></button>
                     </div>
                 `;
-                ul.appendChild(li);
+                // Click sull'intero bottone -> Naviga
+                btn.onclick = (e) => {
+                    // Evita che cliccare sulle icone faccia navigare
+                    if(e.target.closest('.brand-mini-btn')) return;
+                    setFilter('brand', brand);
+                };
+                grid.appendChild(btn);
             });
-            container.appendChild(ul);
+            container.appendChild(grid);
         }
 
         function renderProductList(container, filteredList) {
@@ -420,7 +391,6 @@
                 const stockText = p.quantity > 0 ? `Disponibile: ${p.quantity} pz` : `Non Disponibile`;
                 const stockIcon = p.quantity > 0 ? 'check-circle' : 'x-circle';
 
-                // Generazione Tag (Utili soprattutto in Ricerca)
                 const typeTag = p.type === 'cat' ? '<span class="tag tag-cat">🐱 Gatto</span>' : '<span class="tag tag-dog">🐶 Cane</span>';
                 const consTag = p.consistency === 'Secco' ? '<span class="tag tag-dry">🍪 Secco</span>' : (p.consistency === 'Umido' ? '<span class="tag tag-wet">💧 Umido</span>' : '');
                 const brandTag = p.brand ? `<span class="tag tag-brand">${p.brand}</span>` : '';
@@ -458,14 +428,12 @@
             `;
         }
 
-        // --- NAVIGAZIONE ---
         function navTo(viewName) {
             state.view = viewName;
             render();
         }
 
         function goBack() {
-            // Logica per tornare indietro nei livelli
             if (state.view === 'order' || state.view === 'shop_level1' || state.view === 'search_results') state.view = 'home';
             else if (state.view === 'shop_level2') state.view = 'shop_level1';
             else if (state.view === 'shop_level3') state.view = 'shop_level2';
@@ -482,10 +450,8 @@
             if (key === 'line') navTo('shop_list');
         }
 
-        // --- RICERCA ---
         const modalSearch = document.getElementById('modal-search');
         function openSearchModal() {
-            // Pre-popola campi
             document.getElementById('s-brand').value = activeFilters.brand;
             document.getElementById('s-text').value = activeFilters.text;
             document.getElementById('s-type').value = activeFilters.type;
@@ -508,13 +474,10 @@
         
         function resetSearch() {
             activeFilters = { type: 'all', consistency: '', brand: '', line: '', text: '' };
-            state.view = 'home'; // Reset torna alla home
+            state.view = 'home';
             render();
             closeSearchModal();
         }
-
-
-        // --- CRUD ---
 
         async function saveNote(id) {
             const content = document.getElementById('order-notes').value;
@@ -526,7 +489,8 @@
             setTimeout(() => btn.innerText = "Salva Note", 2000);
         }
 
-        async function editBrand(oldBrand) {
+        async function editBrand(oldBrand, event) {
+            event.stopPropagation(); // Evita navigazione
             const newBrand = prompt("Rinomina marca:", oldBrand);
             if (newBrand && newBrand !== oldBrand) {
                 await sb.from('products').update({ brand: newBrand }).eq('brand', oldBrand);
@@ -535,7 +499,8 @@
             }
         }
 
-        async function deleteBrand(brand) {
+        async function deleteBrand(brand, event) {
+            event.stopPropagation(); // Evita navigazione
             if (confirm(`Eliminare TUTTI i prodotti marca "${brand}"?`)) {
                 await sb.from('products').delete().eq('brand', brand);
                 await fetchAllProducts();
@@ -548,7 +513,6 @@
             document.getElementById('modal-title').innerText = "Nuovo Prodotto";
             document.getElementById('edit-id').value = '';
             
-            // Se sono in una vista specifica, pre-popola i campi
             document.getElementById('inp-type').value = state.animal || 'dog';
             document.getElementById('inp-consistency').value = state.category || 'Secco';
             document.getElementById('inp-brand').value = state.brand || '';
