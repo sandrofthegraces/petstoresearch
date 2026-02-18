@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Listino Pet Food</title>
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         /* STILE BASE iOS */
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f2f2f7; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -24,15 +26,11 @@
         .card-header::after { content: '›'; position: absolute; right: 15px; top: 50%; transform: translateY(-50%) rotate(90deg); font-size: 22px; color: #c7c7cc; transition: 0.3s; }
         .card.expanded .card-header::after { transform: translateY(-50%) rotate(-90deg); color: #007aff; }
 
-        /* HEADER CARD - MODIFICATO */
         .tags-row { display: flex; gap: 8px; margin-bottom: 4px; align-items: center; }
-        
-        /* Stile base per le etichette */
         .tag { font-size: 11px; text-transform: uppercase; font-weight: 800; border-radius: 4px; padding: 2px 0; }
-        
-        .tag-brand { color: #007aff; } /* Blu per la marca */
-        .tag-cat { color: #ff9500; }   /* Arancione per Gatto */
-        .tag-dog { color: #34c759; }   /* Verde per Cane */
+        .tag-brand { color: #007aff; }
+        .tag-cat { color: #ff9500; }
+        .tag-dog { color: #34c759; }
 
         .full-name { font-size: 17px; font-weight: 700; color: #000; padding-right: 20px; line-height: 1.3; }
         .weight { font-size: 14px; color: #888; margin-top: 6px; font-weight: 500; }
@@ -41,7 +39,6 @@
         .card.expanded .details { max-height: 3000px; }
         
         .content { padding: 15px; display: flex; flex-direction: column; gap: 15px; }
-        
         .img-container { text-align: center; background: white; padding: 10px; border-radius: 8px; border: 1px solid #eee; }
         .img-label { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; display: block; font-weight: 600; }
         .prod-img { max-width: 100%; max-height: 300px; width: auto; height: auto; object-fit: contain; display: block; margin: 0 auto; cursor: pointer; }
@@ -75,28 +72,22 @@
         .btn-cancel { background: #e5e5ea; color: black; }
         
         .loading { text-align: center; padding: 40px; color: #888; font-size: 14px; }
-        
-        #global-error { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; color: white; align-items: center; justify-content: center; text-align: left; padding: 20px; box-sizing: border-box; }
-        .error-content { background: #333; padding: 20px; border-radius: 10px; border: 2px solid #ff3b30; width: 100%; max-width: 500px; }
+
+        /* BOX DEBUG */
+        #debug-box { display: none; background: #333; color: #fff; padding: 20px; margin: 20px; border-radius: 8px; border: 2px solid red; }
     </style>
 </head>
 <body>
 
-    <div id="global-error">
-        <div class="error-content">
-            <h3 style="color:#ff3b30; margin-top:0">⚠️ ERRORE RILEVATO</h3>
-            <p id="error-msg">...</p>
-            <button onclick="location.reload()" style="padding:10px; margin-top:10px; width:100%">Ricarica Pagina</button>
-        </div>
-    </div>
-
     <script>
-        window.onerror = function(message, source, lineno, colno, error) {
-            document.getElementById('global-error').style.display = 'flex';
-            document.getElementById('error-msg').innerHTML = 
-                `<strong>Messaggio:</strong> ${message}<br><br><strong>Riga:</strong> ${lineno}<br><strong>Consiglio:</strong> Controlla le credenziali Supabase.`;
-        };
+        // 👇👇👇 INCOLLA I TUOI DATI TRA LE VIRGOLETTE '...' 👇👇👇
+        window.SUPABASE_URL = 'https://uclxbadqwqrfpowmepzg.supabase.co';
+        window.SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVjbHhiYWRxd3FyZnBvd21lcHpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMDkwNjgsImV4cCI6MjA4Njg4NTA2OH0.VI1I6JB2n9QwueYGDiKebRVIvDVl6kYd0agEw7pdw8I';
+        // 👆👆👆 Assicurati di non cancellare le virgolette! 👆👆👆
     </script>
+
+
+    <div id="debug-box"></div>
 
     <div class="header">
         <span class="title">📦 Magazzino</span>
@@ -130,7 +121,7 @@
 
             <div class="field">
                 <label class="label">Nome Completo</label>
-                <input type="text" id="inp-full-name" class="input" placeholder="Es. Monge Renal e Oxalate">
+                <input type="text" id="inp-full-name" class="input" placeholder="Es. Monge Renal">
             </div>
 
             <div class="field">
@@ -171,10 +162,13 @@
     </div>
 
     <script>
-        // 🔴🔴🔴 INCOLLA QUI I DATI DI SUPABASE 🔴🔴🔴
-        const SUPABASE_URL = 'https://uclxbadqwqrfpowmepzg.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVjbHhiYWRxd3FyZnBvd21lcHpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMDkwNjgsImV4cCI6MjA4Njg4NTA2OH0.VI1I6JB2n9QwueYGDiKebRVIvDVl6kYd0agEw7pdw8I';
-        // -----------------------------------------------------------
+        // Gestore Errori Globale
+        window.onerror = function(msg, url, line) {
+            const box = document.getElementById('debug-box');
+            box.style.display = 'block';
+            box.innerHTML = `<strong>⚠️ ERRORE RILEVATO:</strong><br>${msg}<br>Riga: ${line}<br><br>Controlla di aver incollato correttamente URL e KEY in alto.`;
+            return false;
+        };
 
         let products = [];
         let currentTab = 'dog';
@@ -182,15 +176,23 @@
         const listEl = document.getElementById('list');
         let sb; 
 
-        try {
-            if (!SUPABASE_URL || SUPABASE_URL.includes("INCOLLA")) {
-                throw new Error("Hai dimenticato di inserire URL e KEY in fondo al codice!");
+        // Avvio Sicuro
+        document.addEventListener("DOMContentLoaded", () => {
+            try {
+                if (!window.SUPABASE_URL || window.SUPABASE_URL.includes("INCOLLA")) {
+                    throw new Error("Mancano le credenziali Supabase (vedi righe in alto nel codice).");
+                }
+                
+                // Inizializza Client
+                sb = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
+                fetchProducts();
+                
+            } catch (e) {
+                const box = document.getElementById('debug-box');
+                box.style.display = 'block';
+                box.innerHTML = `<strong>Errore Iniziale:</strong> ${e.message}`;
             }
-            sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            fetchProducts();
-        } catch (e) {
-            listEl.innerHTML = `<div class="loading" style="color:red">Errore Iniziale: ${e.message}</div>`;
-        }
+        });
 
         async function fetchProducts() {
             listEl.innerHTML = '<div class="loading">Connessione al database...</div>';
@@ -207,7 +209,7 @@
                 }
                 
                 if (!data || data.length === 0) {
-                    listEl.innerHTML = `<div class="loading">Database VUOTO.<br>Usa l'importatore o premi + per aggiungere.</div>`;
+                    listEl.innerHTML = `<div class="loading">Database VUOTO.<br>Usa l'importatore.</div>`;
                     products = [];
                     return;
                 }
@@ -251,11 +253,9 @@
                         </div>`;
                 }
 
-                // Genero i TAG
                 const typeHtml = p.type === 'cat' 
                     ? `<span class="tag tag-cat">🐱 Gatto</span>` 
                     : `<span class="tag tag-dog">🐶 Cane</span>`;
-                
                 const brandHtml = p.brand ? `<span class="tag tag-brand">${p.brand}</span>` : '';
 
                 li.innerHTML = `
@@ -329,4 +329,96 @@
             document.getElementById('inp-brand').value = '';
             document.getElementById('inp-full-name').value = '';
             document.getElementById('inp-weight').value = '';
-            document.getElementById('inp
+            document.getElementById('inp-desc').value = '';
+            resetFiles();
+            modal.classList.add('open');
+        }
+        function closeModal() { modal.classList.remove('open'); }
+
+        function edit(id) {
+            const p = products.find(x => x.id == id);
+            if(!p) return;
+            document.getElementById('modal-title').innerText = "Modifica Prodotto";
+            document.getElementById('edit-id').value = id;
+            document.getElementById('inp-type').value = p.type;
+            
+            document.getElementById('inp-brand').value = p.brand || '';
+            document.getElementById('inp-full-name').value = p.full_name;
+            document.getElementById('inp-weight').value = p.weight || '';
+            document.getElementById('inp-desc').value = p.description || '';
+            
+            resetFiles();
+            if(p.img_url) {
+                document.getElementById('url-img').value = p.img_url;
+                document.getElementById('lbl-img').innerText = "✅ Foto presente";
+                document.getElementById('wrap-img').classList.add('has-file');
+            }
+            if(p.ration_url) {
+                document.getElementById('url-ration').value = p.ration_url;
+                document.getElementById('lbl-ration').innerText = "✅ Tabella presente";
+                document.getElementById('wrap-ration').classList.add('has-file');
+            }
+            modal.classList.add('open');
+        }
+
+        async function uploadImage(file) {
+            if (!file) return null;
+            const fileName = Date.now() + '-' + file.name.replace(/\s+/g, '-');
+            const { data, error } = await sb.storage.from('images').upload(fileName, file);
+            if (error) throw error;
+            const { data: publicData } = sb.storage.from('images').getPublicUrl(fileName);
+            return publicData.publicUrl;
+        }
+
+        async function saveData() {
+            const btn = document.querySelector('.btn-save');
+            btn.disabled = true; 
+            btn.innerText = "Salvataggio...";
+
+            try {
+                const id = document.getElementById('edit-id').value;
+                const fileImg = document.getElementById('file-img').files[0];
+                const fileRation = document.getElementById('file-ration').files[0];
+                
+                let imgUrl = document.getElementById('url-img').value;
+                let rationUrl = document.getElementById('url-ration').value;
+
+                if (fileImg) { btn.innerText = "Carico Foto..."; imgUrl = await uploadImage(fileImg); }
+                if (fileRation) { btn.innerText = "Carico Tabella..."; rationUrl = await uploadImage(fileRation); }
+
+                const dataPayload = {
+                    type: document.getElementById('inp-type').value,
+                    brand: document.getElementById('inp-brand').value,
+                    full_name: document.getElementById('inp-full-name').value,
+                    weight: document.getElementById('inp-weight').value,
+                    description: document.getElementById('inp-desc').value,
+                    img_url: imgUrl,
+                    ration_url: rationUrl
+                };
+
+                if(!dataPayload.full_name) throw new Error("Devi inserire almeno il Nome Completo!");
+
+                if (id) {
+                    await sb.from('products').update(dataPayload).eq('id', id);
+                } else {
+                    await sb.from('products').insert([dataPayload]);
+                }
+
+                await fetchProducts();
+                closeModal();
+            } catch (e) {
+                alert("Errore: " + e.message);
+            } finally {
+                btn.disabled = false; btn.innerText = "Salva";
+            }
+        }
+
+        async function del(id, name) {
+            if(confirm(`Eliminare ${name}?`)) {
+                await sb.from('products').delete().eq('id', id);
+                fetchProducts();
+            }
+        }
+    </script>
+</body>
+</html>
