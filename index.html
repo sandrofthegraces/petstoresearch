@@ -24,9 +24,17 @@
         .card-header::after { content: '›'; position: absolute; right: 15px; top: 50%; transform: translateY(-50%) rotate(90deg); font-size: 22px; color: #c7c7cc; transition: 0.3s; }
         .card.expanded .card-header::after { transform: translateY(-50%) rotate(-90deg); color: #007aff; }
 
-        /* HEADER CARD */
+        /* HEADER CARD - MODIFICATO */
+        .tags-row { display: flex; gap: 8px; margin-bottom: 4px; align-items: center; }
+        
+        /* Stile base per le etichette */
+        .tag { font-size: 11px; text-transform: uppercase; font-weight: 800; border-radius: 4px; padding: 2px 0; }
+        
+        .tag-brand { color: #007aff; } /* Blu per la marca */
+        .tag-cat { color: #ff9500; }   /* Arancione per Gatto */
+        .tag-dog { color: #34c759; }   /* Verde per Cane */
+
         .full-name { font-size: 17px; font-weight: 700; color: #000; padding-right: 20px; line-height: 1.3; }
-        .brand-tag { font-size: 11px; color: #007aff; text-transform: uppercase; font-weight: 800; margin-bottom: 2px; display: block; }
         .weight { font-size: 14px; color: #888; margin-top: 6px; font-weight: 500; }
 
         .details { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; background: #fafafa; border-top: 1px solid #eee; }
@@ -169,7 +177,6 @@
         // -----------------------------------------------------------
 
         let products = [];
-        // DEFAULT ORA È DOG
         let currentTab = 'dog';
         let searchTerm = '';
         const listEl = document.getElementById('list');
@@ -244,11 +251,19 @@
                         </div>`;
                 }
 
-                const brandHtml = p.brand ? `<span class="brand-tag">${p.brand}</span>` : '';
+                // Genero i TAG
+                const typeHtml = p.type === 'cat' 
+                    ? `<span class="tag tag-cat">🐱 Gatto</span>` 
+                    : `<span class="tag tag-dog">🐶 Cane</span>`;
+                
+                const brandHtml = p.brand ? `<span class="tag tag-brand">${p.brand}</span>` : '';
 
                 li.innerHTML = `
                     <div class="card-header" onclick="toggle(this)">
-                        ${brandHtml}
+                        <div class="tags-row">
+                            ${typeHtml}
+                            ${brandHtml}
+                        </div>
                         <div class="full-name">${p.full_name}</div>
                         ${p.weight ? `<div class="weight">⚖️ ${p.weight}</div>` : ''}
                     </div>
@@ -275,7 +290,6 @@
         
         function setTab(t) {
             currentTab = t;
-            // Aggiornato per riflettere l'inversione
             document.getElementById('tab-cat').className = t === 'cat' ? 'tab-btn active' : 'tab-btn';
             document.getElementById('tab-dog').className = t === 'dog' ? 'tab-btn active' : 'tab-btn';
             render();
@@ -315,96 +329,4 @@
             document.getElementById('inp-brand').value = '';
             document.getElementById('inp-full-name').value = '';
             document.getElementById('inp-weight').value = '';
-            document.getElementById('inp-desc').value = '';
-            resetFiles();
-            modal.classList.add('open');
-        }
-        function closeModal() { modal.classList.remove('open'); }
-
-        function edit(id) {
-            const p = products.find(x => x.id == id);
-            if(!p) return;
-            document.getElementById('modal-title').innerText = "Modifica Prodotto";
-            document.getElementById('edit-id').value = id;
-            document.getElementById('inp-type').value = p.type;
-            
-            document.getElementById('inp-brand').value = p.brand || '';
-            document.getElementById('inp-full-name').value = p.full_name;
-            document.getElementById('inp-weight').value = p.weight || '';
-            document.getElementById('inp-desc').value = p.description || '';
-            
-            resetFiles();
-            if(p.img_url) {
-                document.getElementById('url-img').value = p.img_url;
-                document.getElementById('lbl-img').innerText = "✅ Foto presente";
-                document.getElementById('wrap-img').classList.add('has-file');
-            }
-            if(p.ration_url) {
-                document.getElementById('url-ration').value = p.ration_url;
-                document.getElementById('lbl-ration').innerText = "✅ Tabella presente";
-                document.getElementById('wrap-ration').classList.add('has-file');
-            }
-            modal.classList.add('open');
-        }
-
-        async function uploadImage(file) {
-            if (!file) return null;
-            const fileName = Date.now() + '-' + file.name.replace(/\s+/g, '-');
-            const { data, error } = await sb.storage.from('images').upload(fileName, file);
-            if (error) throw error;
-            const { data: publicData } = sb.storage.from('images').getPublicUrl(fileName);
-            return publicData.publicUrl;
-        }
-
-        async function saveData() {
-            const btn = document.querySelector('.btn-save');
-            btn.disabled = true; 
-            btn.innerText = "Salvataggio...";
-
-            try {
-                const id = document.getElementById('edit-id').value;
-                const fileImg = document.getElementById('file-img').files[0];
-                const fileRation = document.getElementById('file-ration').files[0];
-                
-                let imgUrl = document.getElementById('url-img').value;
-                let rationUrl = document.getElementById('url-ration').value;
-
-                if (fileImg) { btn.innerText = "Carico Foto..."; imgUrl = await uploadImage(fileImg); }
-                if (fileRation) { btn.innerText = "Carico Tabella..."; rationUrl = await uploadImage(fileRation); }
-
-                const dataPayload = {
-                    type: document.getElementById('inp-type').value,
-                    brand: document.getElementById('inp-brand').value,
-                    full_name: document.getElementById('inp-full-name').value,
-                    weight: document.getElementById('inp-weight').value,
-                    description: document.getElementById('inp-desc').value,
-                    img_url: imgUrl,
-                    ration_url: rationUrl
-                };
-
-                if(!dataPayload.full_name) throw new Error("Devi inserire almeno il Nome Completo!");
-
-                if (id) {
-                    await sb.from('products').update(dataPayload).eq('id', id);
-                } else {
-                    await sb.from('products').insert([dataPayload]);
-                }
-
-                await fetchProducts();
-                closeModal();
-            } catch (e) {
-                alert("Errore: " + e.message);
-            } finally {
-                btn.disabled = false; btn.innerText = "Salva";
-            }
-        }
-
-        async function del(id, name) {
-            if(confirm(`Eliminare ${name}?`)) {
-                await sb.from('products').delete().eq('id', id);
-                fetchProducts();
-            }
-        }
-    </script>
-</body>
-</html>
+            document.getElementById('inp
