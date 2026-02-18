@@ -6,11 +6,13 @@
     <title>Listino Pet Food</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* STILE BASE */
+        /* STILE BASE iOS */
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f2f2f7; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        
         .header { position: sticky; top: 0; background: rgba(242, 242, 247, 0.95); padding: 10px 15px; z-index: 100; border-bottom: 1px solid #c6c6c8; backdrop-filter: blur(10px); }
         .title { font-size: 22px; font-weight: 800; margin-bottom: 10px; display: block; }
         #search { width: 100%; padding: 10px 12px; font-size: 17px; border: none; border-radius: 10px; background: #e3e3e8; outline: none; margin-bottom: 10px; box-sizing: border-box; }
+        
         .tabs { display: flex; background: #e3e3e8; border-radius: 9px; padding: 2px; }
         .tab-btn { flex: 1; border: none; background: transparent; padding: 6px 0; font-size: 14px; font-weight: 500; border-radius: 7px; cursor: pointer; transition: 0.2s; }
         .tab-btn.active { background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-weight: 600; }
@@ -22,8 +24,9 @@
         .card-header::after { content: '›'; position: absolute; right: 15px; top: 50%; transform: translateY(-50%) rotate(90deg); font-size: 22px; color: #c7c7cc; transition: 0.3s; }
         .card.expanded .card-header::after { transform: translateY(-50%) rotate(-90deg); color: #007aff; }
 
-        /* NUOVO STILE NOME COMPLETO */
+        /* HEADER CARD */
         .full-name { font-size: 17px; font-weight: 700; color: #000; padding-right: 20px; line-height: 1.3; }
+        .brand-tag { font-size: 11px; color: #007aff; text-transform: uppercase; font-weight: 800; margin-bottom: 2px; display: block; }
         .weight { font-size: 14px; color: #888; margin-top: 6px; font-weight: 500; }
 
         .details { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; background: #fafafa; border-top: 1px solid #eee; }
@@ -113,8 +116,13 @@
             </div>
             
             <div class="field">
-                <label class="label">Nome Completo (Marca + Variante)</label>
-                <input type="text" id="inp-full-name" class="input" placeholder="Es. Monge Renal">
+                <label class="label">Marca</label>
+                <input type="text" id="inp-brand" class="input" placeholder="Es. Monge">
+            </div>
+
+            <div class="field">
+                <label class="label">Nome Completo</label>
+                <input type="text" id="inp-full-name" class="input" placeholder="Es. Monge Renal e Oxalate">
             </div>
 
             <div class="field">
@@ -180,7 +188,7 @@
             listEl.innerHTML = '<div class="loading">Connessione al database...</div>';
             
             try {
-                // Ordina per nome completo
+                // Seleziona tutto e ordina per nome completo
                 const { data, error } = await sb
                     .from('products')
                     .select('*')
@@ -192,7 +200,7 @@
                 }
                 
                 if (!data || data.length === 0) {
-                    listEl.innerHTML = `<div class="loading">Database VUOTO.<br>Usa l'importatore.</div>`;
+                    listEl.innerHTML = `<div class="loading">Database VUOTO.<br>Usa l'importatore o premi + per aggiungere.</div>`;
                     products = [];
                     return;
                 }
@@ -211,8 +219,8 @@
 
             const filtered = products.filter(p => {
                 if (p.type !== currentTab) return false;
-                // Cerca nel nome completo
-                const searchStr = (p.full_name + " " + (p.weight || "")).toLowerCase();
+                // Cerca sia nel nome completo che nella marca
+                const searchStr = (p.full_name + " " + (p.brand || "") + " " + (p.weight || "")).toLowerCase();
                 if (terms.length === 0) return true;
                 return terms.every(t => searchStr.includes(t));
             });
@@ -226,7 +234,7 @@
                 const li = document.createElement('li');
                 li.className = 'card';
                 
-                const img = p.img_url || `https://placehold.co/600x400/e3f2fd/444?text=${encodeURIComponent(p.full_name.substring(0,10))}&font=roboto`;
+                const img = p.img_url || `https://placehold.co/600x400/e3f2fd/444?text=${encodeURIComponent(p.full_name.substring(0,15))}&font=roboto`;
                 
                 let rationHtml = '';
                 if (p.ration_url) {
@@ -237,8 +245,12 @@
                         </div>`;
                 }
 
+                // Se la marca esiste nel database, la mostro piccolina sopra il nome
+                const brandHtml = p.brand ? `<span class="brand-tag">${p.brand}</span>` : '';
+
                 li.innerHTML = `
                     <div class="card-header" onclick="toggle(this)">
+                        ${brandHtml}
                         <div class="full-name">${p.full_name}</div>
                         ${p.weight ? `<div class="weight">⚖️ ${p.weight}</div>` : ''}
                     </div>
@@ -300,7 +312,8 @@
             document.getElementById('modal-title').innerText = "Nuovo Prodotto";
             document.getElementById('edit-id').value = '';
             document.getElementById('inp-type').value = currentTab;
-            // Pulisci solo i campi che esistono
+            
+            document.getElementById('inp-brand').value = '';
             document.getElementById('inp-full-name').value = '';
             document.getElementById('inp-weight').value = '';
             document.getElementById('inp-desc').value = '';
@@ -316,7 +329,8 @@
             document.getElementById('edit-id').value = id;
             document.getElementById('inp-type').value = p.type;
             
-            // Popola il campo unico
+            // Popola i campi
+            document.getElementById('inp-brand').value = p.brand || '';
             document.getElementById('inp-full-name').value = p.full_name;
             document.getElementById('inp-weight').value = p.weight || '';
             document.getElementById('inp-desc').value = p.description || '';
@@ -362,7 +376,8 @@
 
                 const dataPayload = {
                     type: document.getElementById('inp-type').value,
-                    // Uso il campo full_name
+                    // Salva sia Marca che Nome Completo
+                    brand: document.getElementById('inp-brand').value,
                     full_name: document.getElementById('inp-full-name').value,
                     weight: document.getElementById('inp-weight').value,
                     description: document.getElementById('inp-desc').value,
@@ -370,7 +385,7 @@
                     ration_url: rationUrl
                 };
 
-                if(!dataPayload.full_name) throw new Error("Devi inserire il nome del prodotto!");
+                if(!dataPayload.full_name) throw new Error("Devi inserire almeno il Nome Completo!");
 
                 if (id) {
                     await sb.from('products').update(dataPayload).eq('id', id);
