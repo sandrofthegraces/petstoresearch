@@ -15,18 +15,29 @@
         /* HEADER */
         .header { position: sticky; top: 0; background: rgba(242, 242, 247, 0.95); padding: 15px; z-index: 100; border-bottom: 1px solid #c6c6c8; backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: space-between; height: 50px; }
         .title { font-size: 20px; font-weight: 800; color: #000; }
+        
+        .header-left { display: flex; align-items: center; gap: 10px; flex: 1; }
+        .header-right { flex: 0 0 auto; }
+
         .btn-back { border: none; background: transparent; color: #007aff; font-size: 17px; display: flex; align-items: center; gap: 5px; cursor: pointer; padding: 0; font-weight: 500; }
         
+        /* BOTTONE CERCA (Come prima) */
+        .btn-search-trigger { 
+            background: #e3e3e8; color: #007aff; border: none; padding: 8px 15px; 
+            border-radius: 20px; font-weight: 600; font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 5px; 
+        }
+        .btn-search-trigger.active { background: #007aff; color: white; }
+
         /* CONTENITORE PRINCIPALE */
         #app-container { padding: 20px; padding-bottom: 100px; }
 
-        /* BOTTONI GRANDI (HOME) */
+        /* BOTTONI GRANDI DI NAVIGAZIONE */
         .big-btn { display: flex; align-items: center; justify-content: center; width: 100%; padding: 25px; margin-bottom: 15px; border-radius: 16px; border: none; font-size: 22px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: transform 0.1s; }
         .big-btn:active { transform: scale(0.98); }
         .btn-shop { background: #007aff; color: white; }
         .btn-order { background: #ff9500; color: white; }
 
-        /* LISTA DI NAVIGAZIONE (Categories, Brands) */
+        /* LISTA DI NAVIGAZIONE (Marche) */
         .nav-list { list-style: none; padding: 0; margin: 0; }
         .nav-item { background: white; padding: 18px; margin-bottom: 10px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 18px; font-weight: 600; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .nav-item:active { background: #f2f2f2; }
@@ -36,9 +47,20 @@
         .notes-area { width: 100%; height: 60vh; padding: 15px; font-size: 16px; border: 1px solid #ddd; border-radius: 12px; resize: none; font-family: inherit; box-sizing: border-box; background: white; }
         .btn-save-note { background: #34c759; color: white; width: 100%; padding: 15px; border-radius: 12px; border: none; font-size: 18px; font-weight: bold; margin-top: 15px; cursor: pointer; }
 
-        /* CARD PRODOTTO */
+        /* CARD PRODOTTO (Stile Ripristinato) */
         .prod-card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 8px; }
-        .prod-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        
+        .tags-row { display: flex; gap: 6px; margin-bottom: 4px; align-items: center; flex-wrap: wrap; }
+        .tag { font-size: 10px; text-transform: uppercase; font-weight: 800; border-radius: 4px; padding: 3px 6px; letter-spacing: 0.5px; }
+        
+        /* COLORI TAG & EMOJI */
+        .tag-brand { color: #5856d6; background: #f2f2fd; border: 1px solid #dcdcfc; }
+        .tag-line { color: #ff2d55; background: #fff0f2; border: 1px solid #ffccd5; }
+        .tag-wet { color: #007aff; background: #e3f2fd; border: 1px solid #bbdcfc; }
+        .tag-dry { color: #8d6e63; background: #efebe9; border: 1px solid #d7ccc8; } 
+        .tag-cat { color: #ff9500; background: #fff3e0; }
+        .tag-dog { color: #34c759; background: #e8f5e9; }
+
         .prod-name { font-size: 17px; font-weight: 700; color: #000; line-height: 1.3; }
         .prod-weight { font-size: 14px; color: #888; }
         
@@ -51,11 +73,9 @@
         .btn-edit { background: #e3e3e8; color: #007aff; }
         .btn-del { background: #ffebee; color: #ff3b30; }
 
-        /* AZIONI MARCA */
         .brand-actions { display: flex; gap: 10px; }
         .btn-icon { background: none; border: none; padding: 5px; cursor: pointer; color: #888; }
 
-        /* FAB */
         .fab { position: fixed; bottom: 30px; right: 20px; width: 60px; height: 60px; background: #007aff; border-radius: 50%; color: white; border: none; font-size: 35px; box-shadow: 0 4px 15px rgba(0,122,255,0.4); cursor: pointer; z-index: 200; display: flex; align-items: center; justify-content: center; }
 
         /* MODALE */
@@ -70,28 +90,38 @@
         
         .loading { text-align: center; padding: 40px; color: #888; }
         .empty-state { text-align: center; padding: 40px; color: #888; font-style: italic; }
+        .btn-reset { background: #ff3b30; color: white; margin-top: 10px; width: 100%; padding: 15px; border-radius: 8px; border: none; font-size: 16px; font-weight: bold; }
+        .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-cancel { background: #e5e5ea; color: black; flex: 1; padding: 15px; border-radius: 8px; border: none; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <script>
         // 👇👇👇 INCOLLA I TUOI DATI QUI 👇👇👇
-        window.SUPABASE_URL = 'INCOLLA_URL_QUI';
-        window.SUPABASE_KEY = 'INCOLLA_KEY_QUI';
+        window.SUPABASE_URL = 'https://uclxbadqwqrfpowmepzg.supabase.co';
+        window.SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVjbHhiYWRxd3FyZnBvd21lcHpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMDkwNjgsImV4cCI6MjA4Njg4NTA2OH0.VI1I6JB2n9QwueYGDiKebRVIvDVl6kYd0agEw7pdw8I';
         // 👆👆👆 -------------------- 👆👆👆
     </script>
 
     <div class="header">
-        <button class="btn-back" id="btn-back" onclick="goBack()" style="display:none">
-            <i data-lucide="chevron-left"></i> Indietro
-        </button>
-        <span class="title" id="page-title">Negozio</span>
-        <div style="width: 60px;"></div> </div>
-
-    <div id="app-container">
+        <div class="header-left">
+            <button class="btn-back" id="btn-back" onclick="goBack()" style="display:none">
+                <i data-lucide="chevron-left"></i> Indietro
+            </button>
+            <span class="title" id="page-title">Negozio</span>
         </div>
+        <div class="header-right">
+            <button class="btn-search-trigger" onclick="openSearchModal()" id="btn-search-trigger">
+                🔍 Cerca
+            </button>
+        </div>
+    </div>
+
+    <div id="app-container"></div>
 
     <button class="fab" onclick="openProductModal()">+</button>
+
 
     <div class="modal-bg" id="modal-product">
         <div class="modal">
@@ -155,18 +185,74 @@
         </div>
     </div>
 
+
+    <div class="modal-bg" id="modal-search">
+        <div class="modal">
+            <h2 style="margin-top:0; margin-bottom:20px;">🔍 Cerca nel Magazzino</h2>
+            
+            <div style="display:flex; gap:10px;">
+                <div class="field" style="flex:1">
+                    <label class="label">Animale</label>
+                    <select id="s-type">
+                        <option value="all">Tutti</option>
+                        <option value="dog">Cane</option>
+                        <option value="cat">Gatto</option>
+                    </select>
+                </div>
+                <div class="field" style="flex:1">
+                    <label class="label">Categoria</label>
+                    <select id="s-consistency">
+                        <option value="">Tutti</option>
+                        <option value="Secco">Secco</option>
+                        <option value="Umido">Umido</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display:flex; gap:10px;">
+                <div class="field" style="flex:1">
+                    <label class="label">Marca</label>
+                    <input type="text" id="s-brand" class="input" placeholder="Es. Monge">
+                </div>
+                <div class="field" style="flex:1">
+                    <label class="label">Linea</label>
+                    <select id="s-line">
+                        <option value="">Tutte</option>
+                        <option value="Mantenimento">Mantenimento</option>
+                        <option value="Medicati">Medicati</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="field">
+                <label class="label">Contiene nel nome</label>
+                <input type="text" id="s-text" class="input" placeholder="Es. Renal, Puppy...">
+            </div>
+
+            <div class="modal-btns">
+                <button class="btn btn-cancel" onclick="closeSearchModal()">Chiudi</button>
+                <button class="btn btn-shop" onclick="applySearch()">Cerca Ora</button>
+            </div>
+            <button class="btn btn-reset" onclick="resetSearch()">Resetta Filtri</button>
+        </div>
+    </div>
+
+
     <script>
         let sb;
         let products = [];
         
         // STATO DI NAVIGAZIONE
         let state = {
-            view: 'home', // home, order, shop
-            animal: null, // dog, cat, exotic
-            category: null, // Secco, Umido
-            brand: null, // Monge, Royal...
-            line: null // Medicati, Mantenimento
+            view: 'home', // home, order, shop_levelX, search_results
+            animal: null, 
+            category: null, 
+            brand: null, 
+            line: null
         };
+        
+        // FILTRI RICERCA
+        let activeFilters = { type: 'all', consistency: '', brand: '', line: '', text: '' };
 
         // AVVIO
         document.addEventListener("DOMContentLoaded", () => {
@@ -177,7 +263,6 @@
             }
             sb = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
             
-            // Carica tutto subito per velocità
             fetchAllProducts();
             render();
         });
@@ -192,9 +277,21 @@
             const container = document.getElementById('app-container');
             const titleEl = document.getElementById('page-title');
             const backBtn = document.getElementById('btn-back');
+            const searchBtn = document.getElementById('btn-search-trigger');
 
             container.innerHTML = '';
+            
+            // Gestione visibilità pulsanti Header
             backBtn.style.display = state.view === 'home' ? 'none' : 'flex';
+            
+            // Aggiorna stato bottone ricerca
+            if (state.view === 'search_results') {
+                searchBtn.classList.add('active');
+                searchBtn.innerHTML = `🔍 Risultati`;
+            } else {
+                searchBtn.classList.remove('active');
+                searchBtn.innerHTML = `🔍 Cerca`;
+            }
 
             // 1. HOME PAGE
             if (state.view === 'home') {
@@ -221,7 +318,7 @@
                 `;
             }
 
-            // 4. NEGOZIO - LIVELLO 2 (CATEGORIA/CONSISTENZA)
+            // 4. NEGOZIO - LIVELLO 2 (CATEGORIA)
             else if (state.view === 'shop_level2') {
                 titleEl.innerText = state.animal === 'dog' ? "Cane" : "Gatto";
                 container.innerHTML = `
@@ -245,20 +342,43 @@
                 `;
             }
 
-            // 7. NEGOZIO - LIVELLO 5 (LISTA PRODOTTI FINALE)
+            // 7. NEGOZIO - LISTA PRODOTTI
             else if (state.view === 'shop_list') {
-                titleEl.innerText = `${state.brand} - ${state.line}`;
-                renderProductList(container);
+                titleEl.innerText = `${state.line}`;
+                // Filtro stretto per la navigazione gerarchica
+                const filtered = products.filter(p => 
+                    p.type === state.animal && 
+                    p.consistency === state.category &&
+                    p.brand === state.brand &&
+                    p.line === state.line
+                );
+                renderProductList(container, filtered);
+            }
+
+            // 8. RISULTATI RICERCA (FLAT LIST)
+            else if (state.view === 'search_results') {
+                titleEl.innerText = "Risultati Ricerca";
+                // Filtro largo per la ricerca
+                const filtered = products.filter(p => {
+                    if (activeFilters.type !== 'all' && p.type !== activeFilters.type) return false;
+                    if (activeFilters.consistency && p.consistency !== activeFilters.consistency) return false;
+                    if (activeFilters.brand && !(p.brand || "").toLowerCase().includes(activeFilters.brand.toLowerCase())) return false;
+                    if (activeFilters.line && p.line !== activeFilters.line) return false;
+                    if (activeFilters.text) {
+                        const searchStr = (p.full_name + " " + (p.brand || "")).toLowerCase();
+                        if (!searchStr.includes(activeFilters.text.toLowerCase())) return false;
+                    }
+                    return true;
+                });
+                renderProductList(container, filtered);
             }
             
             lucide.createIcons();
         }
 
-        // --- RENDERERS SPECIFICI ---
+        // --- RENDERERS ---
 
-        // LOGICA MARCHE (Distinct)
         function renderBrandList(container) {
-            // Filtra marche disponibili per Animale + Categoria correnti
             const filtered = products.filter(p => p.type === state.animal && p.consistency === state.category);
             const brands = [...new Set(filtered.map(p => p.brand))].sort();
 
@@ -286,21 +406,13 @@
             container.appendChild(ul);
         }
 
-        // LOGICA LISTA PRODOTTI
-        function renderProductList(container) {
-            const filtered = products.filter(p => 
-                p.type === state.animal && 
-                p.consistency === state.category &&
-                p.brand === state.brand &&
-                p.line === state.line
-            );
-
-            if (filtered.length === 0) {
-                container.innerHTML = `<div class="empty-state">Nessun prodotto trovato.<br>Premi + per aggiungere.</div>`;
+        function renderProductList(container, filteredList) {
+            if (filteredList.length === 0) {
+                container.innerHTML = `<div class="empty-state">Nessun prodotto trovato.</div>`;
                 return;
             }
 
-            filtered.forEach(p => {
+            filteredList.forEach(p => {
                 const div = document.createElement('div');
                 div.className = 'prod-card';
                 
@@ -308,9 +420,16 @@
                 const stockText = p.quantity > 0 ? `Disponibile: ${p.quantity} pz` : `Non Disponibile`;
                 const stockIcon = p.quantity > 0 ? 'check-circle' : 'x-circle';
 
+                // Generazione Tag (Utili soprattutto in Ricerca)
+                const typeTag = p.type === 'cat' ? '<span class="tag tag-cat">🐱 Gatto</span>' : '<span class="tag tag-dog">🐶 Cane</span>';
+                const consTag = p.consistency === 'Secco' ? '<span class="tag tag-dry">🍪 Secco</span>' : (p.consistency === 'Umido' ? '<span class="tag tag-wet">💧 Umido</span>' : '');
+                const brandTag = p.brand ? `<span class="tag tag-brand">${p.brand}</span>` : '';
+                const lineTag = p.line ? `<span class="tag tag-line">${p.line}</span>` : '';
+
                 div.innerHTML = `
                     <div class="prod-header">
                         <div>
+                            <div class="tags-row">${typeTag} ${consTag} ${brandTag} ${lineTag}</div>
                             <div class="prod-name">${p.full_name}</div>
                             <div class="prod-weight">${p.weight || ''}</div>
                             <div class="stock-indicator ${stockClass}">
@@ -327,7 +446,6 @@
             });
         }
 
-        // LOGICA PAGINA ORDINI
         async function renderOrderPage(container) {
             container.innerHTML = `<div class="loading">Caricamento nota...</div>`;
             const { data } = await sb.from('notes').select('*').limit(1).single();
@@ -347,8 +465,8 @@
         }
 
         function goBack() {
-            if (state.view === 'order') state.view = 'home';
-            else if (state.view === 'shop_level1') state.view = 'home';
+            // Logica per tornare indietro nei livelli
+            if (state.view === 'order' || state.view === 'shop_level1' || state.view === 'search_results') state.view = 'home';
             else if (state.view === 'shop_level2') state.view = 'shop_level1';
             else if (state.view === 'shop_level3') state.view = 'shop_level2';
             else if (state.view === 'shop_level4') state.view = 'shop_level3';
@@ -364,26 +482,53 @@
             if (key === 'line') navTo('shop_list');
         }
 
-        // --- GESTIONE DATI (CRUD) ---
+        // --- RICERCA ---
+        const modalSearch = document.getElementById('modal-search');
+        function openSearchModal() {
+            // Pre-popola campi
+            document.getElementById('s-brand').value = activeFilters.brand;
+            document.getElementById('s-text').value = activeFilters.text;
+            document.getElementById('s-type').value = activeFilters.type;
+            document.getElementById('s-consistency').value = activeFilters.consistency;
+            document.getElementById('s-line').value = activeFilters.line;
+            modalSearch.classList.add('open');
+        }
+        function closeSearchModal() { modalSearch.classList.remove('open'); }
+        
+        function applySearch() {
+            activeFilters.brand = document.getElementById('s-brand').value.trim();
+            activeFilters.text = document.getElementById('s-text').value.trim();
+            activeFilters.type = document.getElementById('s-type').value;
+            activeFilters.consistency = document.getElementById('s-consistency').value;
+            activeFilters.line = document.getElementById('s-line').value;
+            state.view = 'search_results';
+            render();
+            closeSearchModal();
+        }
+        
+        function resetSearch() {
+            activeFilters = { type: 'all', consistency: '', brand: '', line: '', text: '' };
+            state.view = 'home'; // Reset torna alla home
+            render();
+            closeSearchModal();
+        }
 
-        // 1. NOTE
+
+        // --- CRUD ---
+
         async function saveNote(id) {
             const content = document.getElementById('order-notes').value;
             const btn = document.querySelector('.btn-save-note');
             btn.innerText = "Salvataggio...";
-            
             if (id) await sb.from('notes').update({ content }).eq('id', id);
             else await sb.from('notes').insert([{ content }]);
-            
             btn.innerText = "✅ Salvato!";
             setTimeout(() => btn.innerText = "Salva Note", 2000);
         }
 
-        // 2. MARCHE (Rinomina/Elimina Bulk)
         async function editBrand(oldBrand) {
             const newBrand = prompt("Rinomina marca:", oldBrand);
             if (newBrand && newBrand !== oldBrand) {
-                // Aggiorna TUTTI i prodotti di questa marca
                 await sb.from('products').update({ brand: newBrand }).eq('brand', oldBrand);
                 await fetchAllProducts();
                 render();
@@ -391,30 +536,26 @@
         }
 
         async function deleteBrand(brand) {
-            if (confirm(`ATTENZIONE: Stai per eliminare TUTTI i prodotti marca "${brand}". Sei sicuro?`)) {
+            if (confirm(`Eliminare TUTTI i prodotti marca "${brand}"?`)) {
                 await sb.from('products').delete().eq('brand', brand);
                 await fetchAllProducts();
                 render();
             }
         }
 
-        // 3. PRODOTTI (Modale)
         function openProductModal() {
             const modal = document.getElementById('modal-product');
             document.getElementById('modal-title').innerText = "Nuovo Prodotto";
             document.getElementById('edit-id').value = '';
             
-            // PRE-POPOLA in base a dove ci troviamo
+            // Se sono in una vista specifica, pre-popola i campi
             document.getElementById('inp-type').value = state.animal || 'dog';
             document.getElementById('inp-consistency').value = state.category || 'Secco';
             document.getElementById('inp-brand').value = state.brand || '';
-            // Nessun default su Linea, come richiesto
             document.getElementById('inp-line').value = state.line || ''; 
             
-            // Reset altri campi
             ['inp-full-name', 'inp-weight', 'inp-qty', 'inp-desc'].forEach(id => document.getElementById(id).value = '');
             document.getElementById('inp-qty').value = 0;
-            
             modal.classList.add('open');
         }
 
@@ -423,10 +564,8 @@
         function editProduct(id) {
             const p = products.find(x => x.id == id);
             if (!p) return;
-            
             document.getElementById('modal-title').innerText = "Modifica Prodotto";
             document.getElementById('edit-id').value = id;
-            
             document.getElementById('inp-type').value = p.type;
             document.getElementById('inp-consistency').value = p.consistency;
             document.getElementById('inp-brand').value = p.brand;
@@ -435,7 +574,6 @@
             document.getElementById('inp-weight').value = p.weight;
             document.getElementById('inp-qty').value = p.quantity;
             document.getElementById('inp-desc').value = p.description;
-            
             document.getElementById('modal-product').classList.add('open');
         }
 
@@ -457,15 +595,12 @@
                 return;
             }
 
-            if (id) {
-                await sb.from('products').update(payload).eq('id', id);
-            } else {
-                await sb.from('products').insert([payload]);
-            }
+            if (id) await sb.from('products').update(payload).eq('id', id);
+            else await sb.from('products').insert([payload]);
 
             closeProductModal();
             await fetchAllProducts();
-            render(); // Ricarica la vista corrente
+            render();
         }
 
         async function deleteProduct(id) {
@@ -475,7 +610,6 @@
                 render();
             }
         }
-
     </script>
 </body>
 </html>
