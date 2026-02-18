@@ -11,15 +11,23 @@
         /* STILE BASE iOS */
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f2f2f7; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         
-        .header { position: sticky; top: 0; background: rgba(242, 242, 247, 0.95); padding: 10px 15px; z-index: 100; border-bottom: 1px solid #c6c6c8; backdrop-filter: blur(10px); }
-        .title { font-size: 22px; font-weight: 800; margin-bottom: 10px; display: block; }
-        #search { width: 100%; padding: 10px 12px; font-size: 17px; border: none; border-radius: 10px; background: #e3e3e8; outline: none; margin-bottom: 10px; box-sizing: border-box; }
+        .header { position: sticky; top: 0; background: rgba(242, 242, 247, 0.95); padding: 10px 15px; z-index: 100; border-bottom: 1px solid #c6c6c8; backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: space-between; }
+        .title { font-size: 22px; font-weight: 800; display: block; color: #000; }
         
+        /* BOTTONE RICERCA AVANZATA */
+        .btn-search-trigger { 
+            background: #e3e3e8; color: #007aff; border: none; padding: 8px 15px; 
+            border-radius: 20px; font-weight: 600; font-size: 15px; cursor: pointer; display: flex; align-items: center; gap: 5px; 
+        }
+        .btn-search-trigger.active { background: #007aff; color: white; }
+
+        /* TABS (Ora servono come visualizzazione rapida, ma la ricerca comanda) */
+        .tabs-container { padding: 10px 15px; background: #f2f2f7; }
         .tabs { display: flex; background: #e3e3e8; border-radius: 9px; padding: 2px; }
         .tab-btn { flex: 1; border: none; background: transparent; padding: 6px 0; font-size: 14px; font-weight: 500; border-radius: 7px; cursor: pointer; transition: 0.2s; }
         .tab-btn.active { background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-weight: 600; }
 
-        ul { list-style: none; padding: 0 15px 100px 15px; margin: 15px 0; }
+        ul { list-style: none; padding: 0 15px 100px 15px; margin: 5px 0; }
         .card { background: #fff; margin-bottom: 12px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden; position: relative; transition: all 0.3s ease; }
         
         .card-header { padding: 15px; cursor: pointer; position: relative; }
@@ -27,10 +35,10 @@
         .card.expanded .card-header::after { transform: translateY(-50%) rotate(-90deg); color: #007aff; }
 
         .tags-row { display: flex; gap: 8px; margin-bottom: 4px; align-items: center; }
-        .tag { font-size: 11px; text-transform: uppercase; font-weight: 800; border-radius: 4px; padding: 2px 0; }
-        .tag-brand { color: #007aff; }
-        .tag-cat { color: #ff9500; }
-        .tag-dog { color: #34c759; }
+        .tag { font-size: 11px; text-transform: uppercase; font-weight: 800; border-radius: 4px; padding: 2px 4px; }
+        .tag-brand { color: #007aff; background: #e3f2fd; }
+        .tag-cat { color: #ff9500; background: #fff3e0; }
+        .tag-dog { color: #34c759; background: #e8f5e9; }
 
         .full-name { font-size: 17px; font-weight: 700; color: #000; padding-right: 20px; line-height: 1.3; }
         .weight { font-size: 14px; color: #888; margin-top: 6px; font-weight: 500; }
@@ -52,6 +60,7 @@
 
         .fab { position: fixed; bottom: 30px; right: 20px; width: 56px; height: 56px; background: #007aff; border-radius: 50%; color: white; border: none; font-size: 30px; box-shadow: 0 4px 12px rgba(0,122,255,0.4); cursor: pointer; z-index: 200; display: flex; align-items: center; justify-content: center; }
         
+        /* MODALE GENERICA */
         .modal-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 500; display: none; align-items: flex-end; justify-content: center; backdrop-filter: blur(2px); }
         .modal-bg.open { display: flex; }
         .modal { background: #fff; width: 100%; max-width: 600px; border-radius: 20px 20px 0 0; padding: 25px; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); animation: slideUp 0.3s; max-height: 90vh; overflow-y: auto; }
@@ -70,31 +79,34 @@
         .modal-btns { display: flex; gap: 10px; margin-top: 20px; }
         .btn-save { background: #007aff; color: white; }
         .btn-cancel { background: #e5e5ea; color: black; }
+        .btn-reset { background: #ff3b30; color: white; margin-top: 10px; }
         
         .loading { text-align: center; padding: 40px; color: #888; font-size: 14px; }
-
-        /* BOX DEBUG */
         #debug-box { display: none; background: #333; color: #fff; padding: 20px; margin: 20px; border-radius: 8px; border: 2px solid red; }
     </style>
 </head>
 <body>
 
     <script>
-        // 👇👇👇 INCOLLA I TUOI DATI TRA LE VIRGOLETTE '...' 👇👇👇
+        // 👇👇👇 INCOLLA I DATI QUI 👇👇👇
         window.SUPABASE_URL = 'https://uclxbadqwqrfpowmepzg.supabase.co';
         window.SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVjbHhiYWRxd3FyZnBvd21lcHpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMDkwNjgsImV4cCI6MjA4Njg4NTA2OH0.VI1I6JB2n9QwueYGDiKebRVIvDVl6kYd0agEw7pdw8I';
-        // 👆👆👆 Assicurati di non cancellare le virgolette! 👆👆👆
+        // 👆👆👆 -------------------- 👆👆👆
     </script>
-
 
     <div id="debug-box"></div>
 
     <div class="header">
         <span class="title">📦 Magazzino</span>
-        <input type="search" id="search" placeholder="Cerca prodotto..." autocomplete="off">
+        <button class="btn-search-trigger" onclick="openSearchModal()" id="btn-search-trigger">
+            🔍 Filtri
+        </button>
+    </div>
+
+    <div class="tabs-container">
         <div class="tabs">
-            <button class="tab-btn active" onclick="setTab('dog')" id="tab-dog">🐶 Cane</button>
-            <button class="tab-btn" onclick="setTab('cat')" id="tab-cat">🐱 Gatto</button>
+            <button class="tab-btn active" onclick="setQuickTab('dog')" id="tab-dog">🐶 Cane</button>
+            <button class="tab-btn" onclick="setQuickTab('cat')" id="tab-cat">🐱 Gatto</button>
         </div>
     </div>
 
@@ -102,9 +114,42 @@
         <div class="loading">In attesa di Supabase...</div>
     </ul>
 
-    <button class="fab" onclick="openModal()">+</button>
+    <button class="fab" onclick="openProductModal()">+</button>
 
-    <div class="modal-bg" id="modal">
+
+    <div class="modal-bg" id="modal-search">
+        <div class="modal">
+            <h2 style="margin-top:0; margin-bottom:20px;">🔍 Filtri di Ricerca</h2>
+            
+            <div class="field">
+                <label class="label">Marca</label>
+                <input type="text" id="s-brand" class="input" placeholder="Es. Exclusion, Monge...">
+            </div>
+
+            <div class="field">
+                <label class="label">Animale</label>
+                <select id="s-type">
+                    <option value="all">Tutti</option>
+                    <option value="dog">Cane</option>
+                    <option value="cat">Gatto</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label class="label">Contiene nel nome</label>
+                <input type="text" id="s-text" class="input" placeholder="Es. Renal, Puppy...">
+            </div>
+
+            <div class="modal-btns">
+                <button class="btn btn-cancel" onclick="closeSearchModal()">Chiudi</button>
+                <button class="btn btn-save" onclick="applySearch()">Applica Filtri</button>
+            </div>
+            <button class="btn btn-reset" onclick="resetSearch()">Rimuovi Filtri</button>
+        </div>
+    </div>
+
+
+    <div class="modal-bg" id="modal-product">
         <div class="modal">
             <h2 id="modal-title" style="margin-top:0; margin-bottom:20px;">Nuovo Prodotto</h2>
             <input type="hidden" id="edit-id">
@@ -131,7 +176,7 @@
             
             <div style="display:flex; gap:10px;">
                 <div class="field" style="flex:1">
-                    <label class="label">Foto Prodotto</label>
+                    <label class="label">Foto</label>
                     <div class="file-input-wrapper" onclick="document.getElementById('file-img').click()" id="wrap-img">
                         <span class="file-label" id="lbl-img">📸 Foto</span>
                     </div>
@@ -140,7 +185,7 @@
                 </div>
                 
                 <div class="field" style="flex:1">
-                    <label class="label">Tabella Razioni</label>
+                    <label class="label">Tabella</label>
                     <div class="file-input-wrapper" onclick="document.getElementById('file-ration').click()" id="wrap-ration">
                         <span class="file-label" id="lbl-ration">📊 Tabella</span>
                     </div>
@@ -151,128 +196,117 @@
 
             <div class="field">
                 <label class="label">Descrizione</label>
-                <textarea id="inp-desc" placeholder="Inserisci note o descrizione..."></textarea>
+                <textarea id="inp-desc" placeholder="Inserisci note..."></textarea>
             </div>
             
             <div class="modal-btns">
-                <button class="btn btn-cancel" onclick="closeModal()">Annulla</button>
+                <button class="btn btn-cancel" onclick="closeProductModal()">Annulla</button>
                 <button class="btn btn-save" onclick="saveData()">Salva</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Gestore Errori Globale
         window.onerror = function(msg, url, line) {
-            const box = document.getElementById('debug-box');
-            box.style.display = 'block';
-            box.innerHTML = `<strong>⚠️ ERRORE RILEVATO:</strong><br>${msg}<br>Riga: ${line}<br><br>Controlla di aver incollato correttamente URL e KEY in alto.`;
-            return false;
+            document.getElementById('debug-box').style.display = 'block';
+            document.getElementById('debug-box').innerHTML = `Error: ${msg} (Line ${line})`;
         };
 
         let products = [];
-        let currentTab = 'dog';
-        let searchTerm = '';
-        const listEl = document.getElementById('list');
         let sb; 
+        
+        // STATO DEI FILTRI ATTIVI
+        let activeFilters = {
+            brand: "",
+            type: "dog", // Default parte con i cani
+            text: ""
+        };
 
-        // Avvio Sicuro
         document.addEventListener("DOMContentLoaded", () => {
             try {
-                if (!window.SUPABASE_URL || window.SUPABASE_URL.includes("INCOLLA")) {
-                    throw new Error("Mancano le credenziali Supabase (vedi righe in alto nel codice).");
-                }
-                
-                // Inizializza Client
+                if (!window.SUPABASE_URL || window.SUPABASE_URL.includes("INCOLLA")) throw new Error("Mancano le credenziali.");
                 sb = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
                 fetchProducts();
-                
             } catch (e) {
-                const box = document.getElementById('debug-box');
-                box.style.display = 'block';
-                box.innerHTML = `<strong>Errore Iniziale:</strong> ${e.message}`;
+                document.getElementById('debug-box').style.display = 'block';
+                document.getElementById('debug-box').innerHTML = e.message;
             }
         });
 
         async function fetchProducts() {
-            listEl.innerHTML = '<div class="loading">Connessione al database...</div>';
-            
+            listEl.innerHTML = '<div class="loading">Caricamento...</div>';
             try {
-                const { data, error } = await sb
-                    .from('products')
-                    .select('*')
-                    .order('full_name', { ascending: true });
-                
-                if (error) {
-                    listEl.innerHTML = `<div class="loading" style="color:red">Errore Supabase: ${error.message}</div>`;
-                    return;
-                }
-                
-                if (!data || data.length === 0) {
-                    listEl.innerHTML = `<div class="loading">Database VUOTO.<br>Usa l'importatore.</div>`;
-                    products = [];
-                    return;
-                }
-
-                products = data;
+                const { data, error } = await sb.from('products').select('*').order('full_name', { ascending: true });
+                if (error) throw error;
+                products = data || [];
                 render();
-
             } catch (err) {
-                listEl.innerHTML = `<div class="loading" style="color:red">Errore Critico: ${err.message}</div>`;
+                listEl.innerHTML = `<div class="loading" style="color:red">Errore: ${err.message}</div>`;
             }
         }
 
+        // --- MOTORE DI RICERCA ---
         function render() {
+            const listEl = document.getElementById('list');
             listEl.innerHTML = '';
-            const terms = searchTerm.split(" ").filter(t => t);
 
+            // Applica tutti i filtri in AND (tutti devono essere veri)
             const filtered = products.filter(p => {
-                if (p.type !== currentTab) return false;
-                const searchStr = (p.full_name + " " + (p.brand || "") + " " + (p.weight || "")).toLowerCase();
-                if (terms.length === 0) return true;
-                return terms.every(t => searchStr.includes(t));
+                // 1. Filtro Tipo (Animale)
+                if (activeFilters.type !== 'all' && p.type !== activeFilters.type) return false;
+                
+                // 2. Filtro Marca (se presente)
+                if (activeFilters.brand) {
+                    const b = (p.brand || "").toLowerCase();
+                    if (!b.includes(activeFilters.brand.toLowerCase())) return false;
+                }
+
+                // 3. Filtro Testo Libero (Cerca in nome e marca)
+                if (activeFilters.text) {
+                    const searchStr = (p.full_name + " " + (p.brand || "")).toLowerCase();
+                    if (!searchStr.includes(activeFilters.text.toLowerCase())) return false;
+                }
+
+                return true;
             });
 
+            // Aggiorna UI TABS (per coerenza visiva)
+            updateTabsUI();
+            
+            // Aggiorna Bottone Filtri (si accende se ci sono filtri speciali)
+            const btnSearch = document.getElementById('btn-search-trigger');
+            if(activeFilters.brand || activeFilters.text || activeFilters.type === 'all') {
+                btnSearch.classList.add('active');
+                btnSearch.innerHTML = `🔍 Filtri Attivi (${filtered.length})`;
+            } else {
+                btnSearch.classList.remove('active');
+                btnSearch.innerHTML = `🔍 Filtri`;
+            }
+
             if (filtered.length === 0) {
-                listEl.innerHTML = '<div class="loading">Nessun prodotto trovato.</div>';
+                listEl.innerHTML = '<div class="loading">Nessun prodotto trovato con questi filtri.</div>';
                 return;
             }
 
             filtered.forEach(p => {
                 const li = document.createElement('li');
                 li.className = 'card';
-                
                 const img = p.img_url || `https://placehold.co/600x400/e3f2fd/444?text=${encodeURIComponent(p.full_name.substring(0,15))}&font=roboto`;
                 
-                let rationHtml = '';
-                if (p.ration_url) {
-                    rationHtml = `
-                        <div class="img-container" style="margin-top:10px;">
-                            <span class="img-label">📊 Tabella Razioni</span>
-                            <img src="${p.ration_url}" class="prod-img" loading="lazy" onclick="window.open(this.src)">
-                        </div>`;
-                }
-
-                const typeHtml = p.type === 'cat' 
-                    ? `<span class="tag tag-cat">🐱 Gatto</span>` 
-                    : `<span class="tag tag-dog">🐶 Cane</span>`;
+                let rationHtml = p.ration_url ? `<div class="img-container" style="margin-top:10px;"><span class="img-label">📊 Tabella Razioni</span><img src="${p.ration_url}" class="prod-img" loading="lazy" onclick="window.open(this.src)"></div>` : '';
+                
+                const typeHtml = p.type === 'cat' ? `<span class="tag tag-cat">🐱 Gatto</span>` : `<span class="tag tag-dog">🐶 Cane</span>`;
                 const brandHtml = p.brand ? `<span class="tag tag-brand">${p.brand}</span>` : '';
 
                 li.innerHTML = `
                     <div class="card-header" onclick="toggle(this)">
-                        <div class="tags-row">
-                            ${typeHtml}
-                            ${brandHtml}
-                        </div>
+                        <div class="tags-row">${typeHtml} ${brandHtml}</div>
                         <div class="full-name">${p.full_name}</div>
                         ${p.weight ? `<div class="weight">⚖️ ${p.weight}</div>` : ''}
                     </div>
                     <div class="details">
                         <div class="content">
-                            <div class="img-container">
-                                <span class="img-label">🖼️ Prodotto</span>
-                                <img src="${img}" class="prod-img" loading="lazy" onclick="window.open(this.src)">
-                            </div>
+                            <div class="img-container"><span class="img-label">🖼️ Prodotto</span><img src="${img}" class="prod-img" loading="lazy" onclick="window.open(this.src)"></div>
                             <div class="desc">${p.description || "Nessuna descrizione."}</div>
                             ${rationHtml}
                             <div class="actions">
@@ -287,53 +321,78 @@
         }
 
         function toggle(el) { el.parentElement.classList.toggle('expanded'); }
-        
-        function setTab(t) {
-            currentTab = t;
-            document.getElementById('tab-cat').className = t === 'cat' ? 'tab-btn active' : 'tab-btn';
-            document.getElementById('tab-dog').className = t === 'dog' ? 'tab-btn active' : 'tab-btn';
+
+        // --- GESTIONE TABS VELOCI ---
+        function setQuickTab(type) {
+            // Cliccare le tab in alto è una scorciatoia per resettare i filtri complessi e vedere solo Cane o Gatto
+            activeFilters.brand = "";
+            activeFilters.text = "";
+            activeFilters.type = type;
             render();
         }
-        
-        document.getElementById('search').addEventListener('input', e => {
-            searchTerm = e.target.value.toLowerCase();
-            render();
-        });
 
-        const modal = document.getElementById('modal');
+        function updateTabsUI() {
+            document.getElementById('tab-dog').className = activeFilters.type === 'dog' ? 'tab-btn active' : 'tab-btn';
+            document.getElementById('tab-cat').className = activeFilters.type === 'cat' ? 'tab-btn active' : 'tab-btn';
+        }
+
+        // --- GESTIONE MODALE RICERCA ---
+        const modalSearch = document.getElementById('modal-search');
+
+        function openSearchModal() {
+            // Pre-popola i campi con i valori attuali
+            document.getElementById('s-brand').value = activeFilters.brand;
+            document.getElementById('s-text').value = activeFilters.text;
+            document.getElementById('s-type').value = activeFilters.type;
+            modalSearch.classList.add('open');
+        }
+
+        function closeSearchModal() { modalSearch.classList.remove('open'); }
+
+        function applySearch() {
+            activeFilters.brand = document.getElementById('s-brand').value.trim();
+            activeFilters.text = document.getElementById('s-text').value.trim();
+            activeFilters.type = document.getElementById('s-type').value;
+            render();
+            closeSearchModal();
+        }
+
+        function resetSearch() {
+            activeFilters = { brand: "", text: "", type: "dog" }; // Torna al default
+            render();
+            closeSearchModal();
+        }
+
+        // --- GESTIONE MODALE PRODOTTO (ADD/EDIT) ---
+        const modalProduct = document.getElementById('modal-product');
+
+        function openProductModal() {
+            document.getElementById('modal-title').innerText = "Nuovo Prodotto";
+            document.getElementById('edit-id').value = '';
+            document.getElementById('inp-type').value = activeFilters.type === 'all' ? 'dog' : activeFilters.type;
+            ['inp-brand', 'inp-full-name', 'inp-weight', 'inp-desc', 'file-img', 'file-ration', 'url-img', 'url-ration'].forEach(id => {
+               if(document.getElementById(id)) document.getElementById(id).value = '';
+            });
+            resetFilesLabels();
+            modalProduct.classList.add('open');
+        }
+
+        function closeProductModal() { modalProduct.classList.remove('open'); }
 
         function updateLabel(type) {
             const input = document.getElementById('file-' + type);
-            const label = document.getElementById('lbl-' + type);
-            const wrapper = document.getElementById('wrap-' + type);
             if (input.files && input.files[0]) {
-                label.innerText = "✅ " + input.files[0].name.substring(0, 10) + "...";
-                wrapper.classList.add('has-file');
+                document.getElementById('lbl-' + type).innerText = "✅ " + input.files[0].name.substring(0, 10) + "...";
+                document.getElementById('wrap-' + type).classList.add('has-file');
             }
         }
 
-        function resetFiles() {
-            ['img', 'ration'].forEach(t => {
-                document.getElementById('file-'+t).value = "";
-                document.getElementById('url-'+t).value = "";
-                document.getElementById('lbl-'+t).innerText = t==='img' ? "📸 Foto" : "📊 Tabella";
-                document.getElementById('wrap-'+t).classList.remove('has-file');
-            });
+        function resetFilesLabels() {
+            document.getElementById('lbl-img').innerText = "📸 Foto";
+            document.getElementById('wrap-img').classList.remove('has-file');
+            document.getElementById('lbl-ration').innerText = "📊 Tabella";
+            document.getElementById('wrap-ration').classList.remove('has-file');
         }
-
-        function openModal() {
-            document.getElementById('modal-title').innerText = "Nuovo Prodotto";
-            document.getElementById('edit-id').value = '';
-            document.getElementById('inp-type').value = currentTab;
-            
-            document.getElementById('inp-brand').value = '';
-            document.getElementById('inp-full-name').value = '';
-            document.getElementById('inp-weight').value = '';
-            document.getElementById('inp-desc').value = '';
-            resetFiles();
-            modal.classList.add('open');
-        }
-        function closeModal() { modal.classList.remove('open'); }
 
         function edit(id) {
             const p = products.find(x => x.id == id);
@@ -341,24 +400,16 @@
             document.getElementById('modal-title').innerText = "Modifica Prodotto";
             document.getElementById('edit-id').value = id;
             document.getElementById('inp-type').value = p.type;
-            
             document.getElementById('inp-brand').value = p.brand || '';
             document.getElementById('inp-full-name').value = p.full_name;
             document.getElementById('inp-weight').value = p.weight || '';
             document.getElementById('inp-desc').value = p.description || '';
             
-            resetFiles();
-            if(p.img_url) {
-                document.getElementById('url-img').value = p.img_url;
-                document.getElementById('lbl-img').innerText = "✅ Foto presente";
-                document.getElementById('wrap-img').classList.add('has-file');
-            }
-            if(p.ration_url) {
-                document.getElementById('url-ration').value = p.ration_url;
-                document.getElementById('lbl-ration').innerText = "✅ Tabella presente";
-                document.getElementById('wrap-ration').classList.add('has-file');
-            }
-            modal.classList.add('open');
+            resetFilesLabels();
+            if(p.img_url) { document.getElementById('url-img').value = p.img_url; document.getElementById('lbl-img').innerText = "✅ Foto Ok"; document.getElementById('wrap-img').classList.add('has-file'); }
+            if(p.ration_url) { document.getElementById('url-ration').value = p.ration_url; document.getElementById('lbl-ration').innerText = "✅ Tabella Ok"; document.getElementById('wrap-ration').classList.add('has-file'); }
+            
+            modalProduct.classList.add('open');
         }
 
         async function uploadImage(file) {
@@ -366,27 +417,23 @@
             const fileName = Date.now() + '-' + file.name.replace(/\s+/g, '-');
             const { data, error } = await sb.storage.from('images').upload(fileName, file);
             if (error) throw error;
-            const { data: publicData } = sb.storage.from('images').getPublicUrl(fileName);
-            return publicData.publicUrl;
+            return sb.storage.from('images').getPublicUrl(fileName).data.publicUrl;
         }
 
         async function saveData() {
             const btn = document.querySelector('.btn-save');
-            btn.disabled = true; 
-            btn.innerText = "Salvataggio...";
-
+            btn.disabled = true; btn.innerText = "Salvataggio...";
             try {
                 const id = document.getElementById('edit-id').value;
                 const fileImg = document.getElementById('file-img').files[0];
                 const fileRation = document.getElementById('file-ration').files[0];
-                
                 let imgUrl = document.getElementById('url-img').value;
                 let rationUrl = document.getElementById('url-ration').value;
 
                 if (fileImg) { btn.innerText = "Carico Foto..."; imgUrl = await uploadImage(fileImg); }
                 if (fileRation) { btn.innerText = "Carico Tabella..."; rationUrl = await uploadImage(fileRation); }
 
-                const dataPayload = {
+                const payload = {
                     type: document.getElementById('inp-type').value,
                     brand: document.getElementById('inp-brand').value,
                     full_name: document.getElementById('inp-full-name').value,
@@ -396,21 +443,15 @@
                     ration_url: rationUrl
                 };
 
-                if(!dataPayload.full_name) throw new Error("Devi inserire almeno il Nome Completo!");
+                if(!payload.full_name) throw new Error("Nome mancante!");
 
-                if (id) {
-                    await sb.from('products').update(dataPayload).eq('id', id);
-                } else {
-                    await sb.from('products').insert([dataPayload]);
-                }
+                if (id) await sb.from('products').update(payload).eq('id', id);
+                else await sb.from('products').insert([payload]);
 
                 await fetchProducts();
-                closeModal();
-            } catch (e) {
-                alert("Errore: " + e.message);
-            } finally {
-                btn.disabled = false; btn.innerText = "Salva";
-            }
+                closeProductModal();
+            } catch (e) { alert("Errore: " + e.message); } 
+            finally { btn.disabled = false; btn.innerText = "Salva"; }
         }
 
         async function del(id, name) {
